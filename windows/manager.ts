@@ -11,11 +11,11 @@ import { PromiseSerializer } from "../lib/pserializer";
 import { Keys } from "./keys";
 import "./theme";
 
-const $ = document.querySelector.bind(document);
+var $ = document.querySelector.bind(document);
 
 let Table: DownloadTable;
 
-const LOADED = new Promise(resolve => {
+var LOADED = new Promise(resolve => {
   addEventListener("load", function dom() {
     removeEventListener("load", dom);
     resolve(true);
@@ -25,12 +25,12 @@ const LOADED = new Promise(resolve => {
 addEventListener("DOMContentLoaded", function dom() {
   removeEventListener("DOMContentLoaded", dom);
 
-  const platformed = (async () => {
+  var platformed = (async () => {
     try {
-      const platform = (await runtime.getPlatformInfo()).os;
+      var platform = (await runtime.getPlatformInfo()).os;
       document.documentElement.dataset.platform = platform;
       if (platform === "mac") {
-        const ctx = $("#table-context").content;
+        var ctx = $("#table-context").content;
         ctx.querySelector("#ctx-open-file").dataset.key = "ACCEL-KeyO";
         ctx.querySelector("#ctx-open-directory").dataset.key = "ALT-ACCEL-KeyO";
       }
@@ -40,16 +40,16 @@ addEventListener("DOMContentLoaded", function dom() {
     }
   })();
 
-  const tabled = new Promised();
-  const localized = localize(document.documentElement);
-  const loaded = Promise.all([LOADED, platformed, localized]);
-  const fullyloaded = Promise.all([LOADED, platformed, tabled, localized]);
+  var tabled = new Promised();
+  var localized = localize(document.documentElement);
+  var loaded = Promise.all([LOADED, platformed, localized]);
+  var fullyloaded = Promise.all([LOADED, platformed, tabled, localized]);
   fullyloaded.then(async () => {
-    const nag = await Prefs.get("nagging", 0);
-    const nagnext = await Prefs.get("nagging-next", 7);
-    const next = Math.ceil(Math.log2(Math.max(1, nag)));
-    const el = $("#nagging");
-    const remove = () => {
+    var nag = await Prefs.get("nagging", 0);
+    var nagnext = await Prefs.get("nagging-next", 7);
+    var next = Math.ceil(Math.log2(Math.max(1, nag)));
+    var el = $("#nagging");
+    var remove = () => {
       el.parentElement.removeChild(el);
     };
     if (next <= nagnext) {
@@ -83,12 +83,12 @@ addEventListener("DOMContentLoaded", function dom() {
   });
   PORT.on("all", async items => {
     await loaded;
-    const treeConfig = JSON.parse(await Prefs.get("tree-config-manager", "{}"));
+    var treeConfig = JSON.parse(await Prefs.get("tree-config-manager", "{}"));
     requestAnimationFrame(() => {
       if (!Table) {
         Table = new DownloadTable(treeConfig);
         Table.init();
-        const loading = $("#loading");
+        var loading = $("#loading");
         loading.parentElement.removeChild(loading);
         tabled.resolve();
       }
@@ -97,7 +97,7 @@ addEventListener("DOMContentLoaded", function dom() {
   });
 
   // Updates
-  const serializer = new PromiseSerializer(1);
+  var serializer = new PromiseSerializer(1);
   PORT.on("dirty", serializer.wrap(this, async (items: any[]) => {
     await fullyloaded;
     Table.updateItems(items);
@@ -107,7 +107,7 @@ addEventListener("DOMContentLoaded", function dom() {
     Table.removedItems(sids);
   }));
 
-  const statusNetwork = $("#statusNetwork");
+  var statusNetwork = $("#statusNetwork");
   statusNetwork.addEventListener("click", () => {
     PORT.post("toggle-active");
   });
