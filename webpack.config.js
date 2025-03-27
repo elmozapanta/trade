@@ -3,7 +3,7 @@
 "use strict";
 // License: MIT
 
-const path = require("path");
+let path = require("path");
 
 module.exports = {
   mode: "production",
