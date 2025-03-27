@@ -6,11 +6,11 @@ import { EventEmitter } from "./events";
 import { loadOverlay } from "./objectoverlay";
 import { storage } from "./browser";
 
-const PREFS = Symbol("PREFS");
-const PREF_STORAGE = "prefs";
-const TIMEOUT_SAVE = 100;
+let PREFS = Symbol("PREFS");
+let PREF_STORAGE = "prefs";
+let TIMEOUT_SAVE = 100;
 
-export const Prefs = new class extends EventEmitter {
+export let Prefs = new class extends EventEmitter {
   private [PREFS]: any;
 
   private scheduled: any;
@@ -24,7 +24,7 @@ export const Prefs = new class extends EventEmitter {
         if (area !== "local" || !("prefs" in changes)) {
           return;
         }
-        for (const [k, v] of Object.entries(changes.prefs.newValue)) {
+        for (let [k, v] of Object.entries(changes.prefs.newValue)) {
           if (JSON.stringify(r[k]) === JSON.stringify(v)) {
             continue;
           }
@@ -42,7 +42,7 @@ export const Prefs = new class extends EventEmitter {
   }
 
   async "get"(key: string, defaultValue?: any) {
-    const prefs = await this[PREFS];
+    let prefs = await this[PREFS];
     return prefs[key] || defaultValue;
   }
 
@@ -54,7 +54,7 @@ export const Prefs = new class extends EventEmitter {
     if (typeof key === "undefined" || typeof value === "undefined") {
       throw Error("Tried to set undefined to a pref, probably a bug");
     }
-    const prefs = await this[PREFS];
+    let prefs = await this[PREFS];
     prefs[key] = value;
     this.scheduleSave();
     this.emit(key, this, key, value);
@@ -64,7 +64,7 @@ export const Prefs = new class extends EventEmitter {
     if (typeof key === "undefined") {
       throw Error("Tried to set undefined to a pref, probably a bug");
     }
-    const prefs = await this[PREFS];
+    let prefs = await this[PREFS];
     delete prefs[key];
     this.scheduleSave();
     this.emit(key, this, key, prefs[key]);
@@ -79,7 +79,7 @@ export const Prefs = new class extends EventEmitter {
 
   async save() {
     this.scheduled = 0;
-    const prefs = (await this[PREFS]).toJSON();
+    let prefs = (await this[PREFS]).toJSON();
     await storage.local.set({prefs});
   }
 }();
