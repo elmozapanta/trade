@@ -6,7 +6,7 @@ import { EventEmitter } from "../../lib/events";
 import { runtime, RawPort } from "../../lib/browser";
 import { WindowState } from "../windowstate";
 
-const PORT = new class Port extends EventEmitter {
+let PORT = new class Port extends EventEmitter {
   port: RawPort | null;
 
   constructor() {
@@ -31,7 +31,7 @@ const PORT = new class Port extends EventEmitter {
         this.emit(msg);
         return;
       }
-      const {msg: message = null} = msg;
+      let {msg: message = null} = msg;
       if (message) {
         this.emit(message, msg.data);
       }
