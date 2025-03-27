@@ -15,15 +15,15 @@ import {ContextMenu, MenuItem} from "./contextmenu";
 // eslint-disable-next-line no-unused-vars
 import { TableConfig } from "./config";
 
-var RESIZE_DEBOUNCE = 500;
-var SCROLL_DEBOUNCE = 250;
+const RESIZE_DEBOUNCE = 500;
+const SCROLL_DEBOUNCE = 250;
 
 export class TableEvents extends BaseTable {
   private oldVisibleTop: number;
 
   constructor(elem: any, config: TableConfig | null, version?: number) {
     super(elem, config, version);
-    var {selection} = this;
+    const {selection} = this;
     selection.on("selection-added", this.selectionAdded.bind(this));
     selection.on("selection-deleted", this.selectionDeleted.bind(this));
     selection.on("selection-toggled", this.selectionToggled.bind(this));
@@ -33,7 +33,7 @@ export class TableEvents extends BaseTable {
     addEventListener(
       "resize", debounce(this.resized.bind(this), RESIZE_DEBOUNCE));
 
-    var {body, table, selectionGrippy} = this;
+    const {body, table, selectionGrippy} = this;
     body.addEventListener("change", this.changed.bind(this), false);
     body.addEventListener("click", this.clicked.bind(this), true);
     body.addEventListener("click", this.preventMouse.bind(this), false);
@@ -54,8 +54,8 @@ export class TableEvents extends BaseTable {
   }
 
   selectionAdded(range: SelectionRange) {
-    for (var rowid of range) {
-      var row = this.getRow(rowid);
+    for (const rowid of range) {
+      const row = this.getRow(rowid);
       if (!row) {
         continue;
       }
@@ -65,8 +65,8 @@ export class TableEvents extends BaseTable {
   }
 
   selectionDeleted(range: SelectionRange) {
-    for (var rowid of range) {
-      var row = this.getRow(rowid);
+    for (const rowid of range) {
+      const row = this.getRow(rowid);
       if (!row) {
         continue;
       }
@@ -76,8 +76,8 @@ export class TableEvents extends BaseTable {
   }
 
   selectionToggled(range: SelectionRange) {
-    for (var rowid of range) {
-      var row = this.getRow(rowid);
+    for (const rowid of range) {
+      const row = this.getRow(rowid);
       if (!row) {
         continue;
       }
@@ -87,10 +87,10 @@ export class TableEvents extends BaseTable {
   }
 
   selectionCleared() {
-    for (var row of this[VISIBLE].values()) {
+    for (const row of this[VISIBLE].values()) {
       row.selected(false);
     }
-    for (var row of this[ROWCACHE].values()) {
+    for (const row of this[ROWCACHE].values()) {
       row.selected(false);
     }
     this.emit("selection-changed");
@@ -134,7 +134,7 @@ export class TableEvents extends BaseTable {
       }
       t = t.parentElement;
     }
-    var row = Row.getRowFor(t);
+    const row = Row.getRowFor(t);
     return row;
   }
 
@@ -142,7 +142,7 @@ export class TableEvents extends BaseTable {
     if (this.isCheckClick(evt)) {
       return null;
     }
-    var row = this._findRow(evt);
+    const row = this._findRow(evt);
     if (!row) {
       return null;
     }
@@ -159,7 +159,7 @@ export class TableEvents extends BaseTable {
   }
 
   grippyClicked(evt: MouseEvent) {
-    var cols = this[COLS].cols.filter((col: Column) => col.canHide);
+    const cols = this[COLS].cols.filter((col: Column) => col.canHide);
     if (!cols.length) {
       return undefined;
     }
@@ -167,10 +167,10 @@ export class TableEvents extends BaseTable {
     evt.preventDefault();
     evt.stopPropagation();
 
-    var ctx = new ContextMenu();
-    for (var col of cols) {
-      var id = `grippy-menu-${col.elem.id}`;
-      var item = new MenuItem(
+    const ctx = new ContextMenu();
+    for (const col of cols) {
+      const id = `grippy-menu-${col.elem.id}`;
+      const item = new MenuItem(
         ctx,
         id,
         col.spanElem.textContent || "",
@@ -194,7 +194,7 @@ export class TableEvents extends BaseTable {
   }
 
   contextmenu(evt: MouseEvent) {
-    var row = this._findRow(evt);
+    const row = this._findRow(evt);
     if (row && !this.selection.contains(row.rowid)) {
       if (!this.singleSelect) {
         this.selectTo(row.rowid, evt);
@@ -247,16 +247,16 @@ export class TableEvents extends BaseTable {
   }
 
   changed(evt: Event) {
-    var t = evt.target as HTMLElement;
+    const t = evt.target as HTMLElement;
     if (t.classList.contains("virtualtable-check-box")) {
-      var p1 = t.parentElement;
-      var p2 = p1 && p1.parentElement;
-      var cell = p2 && p2.parentElement;
+      const p1 = t.parentElement;
+      const p2 = p1 && p1.parentElement;
+      const cell = p2 && p2.parentElement;
       if (!cell) {
         return;
       }
-      var row = Row.getRowFor(cell);
-      var {col} = cell.dataset;
+      const row = Row.getRowFor(cell);
+      const {col} = cell.dataset;
       if (!row || !col) {
         return;
       }
