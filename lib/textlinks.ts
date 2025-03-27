@@ -3,21 +3,21 @@
 
 import { textlinks as rtextlinks } from "../data/xregexps.json";
 
-var SCHEME_DEFAULT = "https";
+const SCHEME_DEFAULT = "https";
 
 // Link matcher
-var regLinks = new RegExp(rtextlinks.source, rtextlinks.flags);
+const regLinks = new RegExp(rtextlinks.source, rtextlinks.flags);
 // Match more exactly or more than 3 dots.
 // Links are then assumed "cropped" and will be ignored.
-var regShortened = /\.{3,}/;
+const regShortened = /\.{3,}/;
 // http cleanup
-var regHttp = /^h(?:x+|tt)?p(s?)/i;
+const regHttp = /^h(?:x+|tt)?p(s?)/i;
 // ftp cleanup
-var regFtp = /^f(?:x+|t)p/i;
+const regFtp = /^f(?:x+|t)p/i;
 // www (sans protocol) match
-var regWWW = /^www/i;
+const regWWW = /^www/i;
 // Right-trim (sanitize) link
-var regDTrim = /[<>._-]+$|#.*?$/g;
+const regDTrim = /[<>._-]+$|#.*?$/g;
 
 function mapper(e: string) {
   try {
@@ -74,7 +74,7 @@ export class FakeLink {
 
   getAttribute(attr: string) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
-    var self: any = this;
+    const self: any = this;
     return (attr in self) ? self[attr] : null;
   }
 
@@ -95,13 +95,13 @@ FakeLink.prototype.childNodes = Object.freeze([]);
  * @returns {string[]} results
  */
 export function getTextLinks(text: string, fakeLinks = false) {
-  var rv: any = text.match(regLinks);
+  const rv: any = text.match(regLinks);
   if (!rv) {
     return [];
   }
   let i; let k; let e;
   for (i = 0, k = 0, e = rv.length; i < e; i++) {
-    var a = mapper(rv[i]);
+    const a = mapper(rv[i]);
     if (a) {
       rv[k] = fakeLinks ? new FakeLink(a) : a;
       k += 1;
