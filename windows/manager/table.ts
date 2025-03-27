@@ -42,30 +42,30 @@ import * as imex from "../../lib/imex";
 // eslint-disable-next-line no-unused-vars
 import { BaseItem } from "../../lib/item";
 
-const TREE_CONFIG_VERSION = 2;
-const RUNNING_TIMEOUT = 1000;
-const SIZES_TIMEOUT = 150;
+var TREE_CONFIG_VERSION = 2;
+var RUNNING_TIMEOUT = 1000;
+var SIZES_TIMEOUT = 150;
 
-const COL_URL = 0;
-const COL_DOMAIN = 1;
-const COL_PROGRESS = 2;
-const COL_PER = 3;
-const COL_SIZE = 4;
-const COL_ETA = 5;
-const COL_SPEED = 6;
-const COL_MASK = 7;
-const COL_SEGS = 8;
+var COL_URL = 0;
+var COL_DOMAIN = 1;
+var COL_PROGRESS = 2;
+var COL_PER = 3;
+var COL_SIZE = 4;
+var COL_ETA = 5;
+var COL_SPEED = 6;
+var COL_MASK = 7;
+var COL_SEGS = 8;
 
-const HIDPI = window.matchMedia &&
+var HIDPI = window.matchMedia &&
   window.matchMedia("(min-resolution: 2dppx)").matches;
 
-const ICON_BASE_SIZE = 16;
-const ICON_REAL_SIZE = !CHROME && HIDPI ? ICON_BASE_SIZE * 2 : ICON_BASE_SIZE;
+var ICON_BASE_SIZE = 16;
+var ICON_REAL_SIZE = !CHROME && HIDPI ? ICON_BASE_SIZE * 2 : ICON_BASE_SIZE;
 // eslint-disable-next-line no-magic-numbers
-const LARGE_ICON_BASE_SIZE = CHROME ? 32 : 64;
+var LARGE_ICON_BASE_SIZE = CHROME ? 32 : 64;
 // eslint-disable-next-line no-magic-numbers
-const MAX_ICON_BASE_SIZE = CHROME ? 32 : 127;
-const LARGE_ICON_REAL_SIZE = HIDPI ? MAX_ICON_BASE_SIZE : LARGE_ICON_BASE_SIZE;
+var MAX_ICON_BASE_SIZE = CHROME ? 32 : 127;
+var LARGE_ICON_REAL_SIZE = HIDPI ? MAX_ICON_BASE_SIZE : LARGE_ICON_BASE_SIZE;
 
 let TEXT_SIZE_UNKNOWM = "unknown";
 let REAL_STATE_TEXTS = Object.freeze(new Map<number, string>());
@@ -73,8 +73,8 @@ StateTexts.then(v => {
   REAL_STATE_TEXTS = v;
 });
 
-const prettyNumber = (function() {
-const rv = new Intl.NumberFormat(undefined, {
+var prettyNumber = (function() {
+var rv = new Intl.NumberFormat(undefined, {
   style: "decimal",
   useGrouping: true,
   minimumFractionDigits: 0,
@@ -92,7 +92,7 @@ class ShowUrlsWatcher extends PrefWatcher {
   }
 
   changed(prefs: any, name: string, value: any) {
-    const rv = super.changed(prefs, name, value);
+    var rv = super.changed(prefs, name, value);
     this.table.invalidate();
     return rv;
   }
@@ -200,11 +200,11 @@ export class DownloadItem extends EventEmitter {
   }
 
   get eta() {
-    const {avg} = this.stats;
+    var {avg} = this.stats;
     if (!this.totalSize || !avg) {
       return TEXT_SIZE_UNKNOWM;
     }
-    const remain = this.totalSize - this.written;
+    var remain = this.totalSize - this.written;
     return formatTimeDelta(remain / avg);
   }
 
@@ -287,7 +287,7 @@ export class DownloadItem extends EventEmitter {
     }
     delete raw.position;
     delete raw.owner;
-    const oldState = this.state;
+    var oldState = this.state;
     Object.assign(this, raw);
     if (raw.url) {
       this.updateURL();
@@ -301,12 +301,12 @@ export class DownloadItem extends EventEmitter {
   }
 
   async queryState() {
-    const [state] = await downloads.search({id: this.manId});
+    var [state] = await downloads.search({id: this.manId});
     return state;
   }
 
   adoptSize(state: any) {
-    const {
+    var {
       bytesReceived,
       totalBytes,
       fileSize
@@ -319,7 +319,7 @@ export class DownloadItem extends EventEmitter {
     if (!this.manId) {
       return;
     }
-    const state = await this.queryState();
+    var state = await this.queryState();
     if (!this.manId) {
       return;
     }
@@ -338,7 +338,7 @@ export class DownloadItem extends EventEmitter {
     let v = 0;
     try {
       if (this.manId) {
-        const state = await this.queryState();
+        var state = await this.queryState();
         if (!this.manId) {
           return -1;
         }
@@ -459,39 +459,39 @@ export class DownloadTable extends VirtualTable {
     this.updateCounts();
 
     new TextFilter(this.downloads);
-    const menufilters = new Map<string, MenuFilter>([
+    var menufilters = new Map<string, MenuFilter>([
       ["colURL", new UrlMenuFilter(this.downloads)],
       ["colETA", new StateMenuFilter(this.downloads, REAL_STATE_TEXTS)],
       ["colSize", new SizeMenuFilter(this.downloads)],
     ]);
     this.on("column-clicked", (id, evt, col) => {
-      const mf = menufilters.get(id);
-      const {left, bottom} = col.elem.getBoundingClientRect();
+      var mf = menufilters.get(id);
+      var {left, bottom} = col.elem.getBoundingClientRect();
       if (!mf) {
         return undefined;
       }
       mf.show({clientX: left, clientY: bottom});
       return true;
     });
-    const filterforColumn = new Map(Array.from(
+    var filterforColumn = new Map(Array.from(
       menufilters.entries()).map(([col, f]) => [f.id, col]));
     this.downloads.on("filter-active", filter => {
-      const name = filterforColumn.get(filter);
+      var name = filterforColumn.get(filter);
       if (!name) {
         return;
       }
-      const col = this.getColumnByName(name);
+      var col = this.getColumnByName(name);
       if (!col) {
         return;
       }
       col.iconElem.classList.add("icon-filter");
     });
     this.downloads.on("filter-inactive", filter => {
-      const name = filterforColumn.get(filter);
+      var name = filterforColumn.get(filter);
       if (!name) {
         return;
       }
-      const col = this.getColumnByName(name);
+      var col = this.getColumnByName(name);
       if (!col) {
         return;
       }
@@ -503,7 +503,7 @@ export class DownloadTable extends VirtualTable {
     this.sids = new Map<number, DownloadItem>();
     this.icons = new Icons($("#icons"));
 
-    const ctx = this.contextMenu = new ContextMenu("#table-context");
+    var ctx = this.contextMenu = new ContextMenu("#table-context");
     Keys.adoptContext(ctx);
     Keys.adoptButtons($("#toolbar"));
 
@@ -512,7 +512,7 @@ export class DownloadTable extends VirtualTable {
     });
 
     Keys.on("ACCEL-KeyA", (event: Event) => {
-      const target = event.target as HTMLElement;
+      var target = event.target as HTMLElement;
       if (target.localName === "input") {
         return false;
       }
@@ -526,7 +526,7 @@ export class DownloadTable extends VirtualTable {
     });
 
     Keys.on("Delete", (event: Event) => {
-      const target = event.target as HTMLElement;
+      var target = event.target as HTMLElement;
       if (target.localName === "input") {
         return false;
       }
@@ -535,7 +535,7 @@ export class DownloadTable extends VirtualTable {
     });
 
     Keys.on("ALT-Delete", (event: Event) => {
-      const target = event.target as HTMLElement;
+      var target = event.target as HTMLElement;
       if (target.localName === "input") {
         return false;
       }
@@ -544,7 +544,7 @@ export class DownloadTable extends VirtualTable {
     });
 
     Keys.on("SHIFT-Delete", (event: Event) => {
-      const target = event.target as HTMLElement;
+      var target = event.target as HTMLElement;
       if (target.localName === "input") {
         return false;
       }
@@ -581,7 +581,7 @@ export class DownloadTable extends VirtualTable {
 
     ctx.on("clicked", e => this.handleFilterRemove(e));
 
-    const toolbar = new Buttons("#toolbar");
+    var toolbar = new Buttons("#toolbar");
     toolbar.on("btn-add", () => PORT.post("showSingle"));
 
     this.resumeAction = new Broadcaster("btn-resume", "ctx-resume");
@@ -612,11 +612,11 @@ export class DownloadTable extends VirtualTable {
     this.openURLAction = new Broadcaster("ctx-open-url");
     this.openURLAction.onaction = this.openURL.bind(this);
 
-    const moveAction = (method: string) => {
+    var moveAction = (method: string) => {
       if (this.selection.empty) {
         return;
       }
-      const d: any = this.downloads;
+      var d: any = this.downloads;
       d[method](Array.from(this.selection));
     };
 
@@ -653,7 +653,7 @@ export class DownloadTable extends VirtualTable {
     this.selection.clear();
 
     this.tooltip = null;
-    const tooltipWatcher = new PrefWatcher("tooltip", true);
+    var tooltipWatcher = new PrefWatcher("tooltip", true);
     this.on("hover", info => {
       if (!document.hasFocus()) {
         return;
@@ -661,7 +661,7 @@ export class DownloadTable extends VirtualTable {
       if (!tooltipWatcher.value) {
         return;
       }
-      const item = this.downloads.filtered[info.rowid];
+      var item = this.downloads.filtered[info.rowid];
       if (!item) {
         return;
       }
@@ -689,11 +689,11 @@ export class DownloadTable extends VirtualTable {
   }
 
   updateCounts() {
-    const {length: total} = this.downloads.items;
-    const fTotal = prettyNumber(total);
-    const fFin = prettyNumber(this.finished);
-    const fDisp = prettyNumber(this.rowCount);
-    const fRunning = prettyNumber(this.running.size);
+    var {length: total} = this.downloads.items;
+    var fTotal = prettyNumber(total);
+    var fFin = prettyNumber(this.finished);
+    var fDisp = prettyNumber(this.rowCount);
+    var fRunning = prettyNumber(this.running.size);
     $("#statusItems").textContent = _(
       "manager-status-items",
       fFin,
@@ -709,15 +709,15 @@ export class DownloadTable extends VirtualTable {
   }
 
   async updateSizes() {
-    for (const r of this.running) {
+    for (var r of this.running) {
       await r.updateSizes();
     }
   }
 
   async updateRunning() {
     let sum = 0;
-    for (const r of this.running) {
-      const v = await r.updateStats();
+    for (var r of this.running) {
+      var v = await r.updateStats();
       if (v >= 0) {
         sum += v;
       }
@@ -735,20 +735,20 @@ export class DownloadTable extends VirtualTable {
   }
 
   async showContextMenu(event: MouseEvent) {
-    const {contextMenu: ctx} = this;
-    const filts = await filters();
+    var {contextMenu: ctx} = this;
+    var filts = await filters();
 
-    const prepareMenu = (prefix: string) => {
-      const rem = (ctx.get(prefix) as SubMenuItem).menu;
+    var prepareMenu = (prefix: string) => {
+      var rem = (ctx.get(prefix) as SubMenuItem).menu;
       prefix += "-filter-";
       Array.from(rem).
         filter(e => e.startsWith(prefix)).
         forEach(e => rem.remove(e));
-      for (const filt of filts.all) {
+      for (var filt of filts.all) {
         if (typeof filt.id !== "string" || filt.id === "deffilter-all") {
           continue;
         }
-        const mi = new MenuItem(rem, `${prefix}-${filt.id}`, filt.label, {
+        var mi = new MenuItem(rem, `${prefix}-${filt.id}`, filt.label, {
           icon: this.icons.get(iconForPath(`file.${filt.icon || "bin"}`, ICON_BASE_SIZE))
         });
         rem.add(mi);
@@ -762,46 +762,46 @@ export class DownloadTable extends VirtualTable {
   }
 
   setItems(items: any[]) {
-    const savedStats = new Map(
+    var savedStats = new Map(
       Array.from(this.running).map(item => [item.sessionId, item.stats]));
     this.running.clear();
     this.sids.clear();
     this.downloads.set(items.map(item => {
-      const rv = new DownloadItem(this, item, savedStats.get(item.sessionId));
+      var rv = new DownloadItem(this, item, savedStats.get(item.sessionId));
       this.sids.set(rv.sessionId, rv);
       return rv;
     }));
   }
 
   getSelectedItems() {
-    const {filtered} = this.downloads;
+    var {filtered} = this.downloads;
     return Array.from(this.selection).map(e => filtered[e]);
   }
 
   getSelectedSids(allowedStates: number) {
-    const {filtered} = this.downloads;
-    const selected = Array.from(this.selection);
-    const allowedItems = selected.filter(
+    var {filtered} = this.downloads;
+    var selected = Array.from(this.selection);
+    var allowedItems = selected.filter(
       i => allowedStates & filtered[i].state);
     return allowedItems.map(i => filtered[i].sessionId);
   }
 
   selectionChanged() {
     this.dismissTooltip();
-    const {empty} = this.selection;
+    var {empty} = this.selection;
     if (empty) {
-      for (const d of this.disableSet) {
+      for (var d of this.disableSet) {
         d.disabled = true;
       }
       return;
     }
 
-    for (const d of this.disableSet) {
+    for (var d of this.disableSet) {
       d.disabled = false;
     }
 
-    const items = this.getSelectedItems();
-    const states = items.reduce((p, c) => p |= c.state, 0);
+    var items = this.getSelectedItems();
+    var states = items.reduce((p, c) => p |= c.state, 0);
 
     if (!(states & DownloadState.PAUSEABLE)) {
       this.pauseAction.disabled = true;
@@ -822,17 +822,17 @@ export class DownloadTable extends VirtualTable {
       this.deleteFilesAction.disabled = true;
     }
 
-    const item = this.focusRow >= 0 ?
+    var item = this.focusRow >= 0 ?
       this.downloads.filtered[this.focusRow] :
       null;
-    const canOpen = item && item.manId && item.state === DownloadState.DONE;
-    const canOpenDirectory = item && item.manId;
+    var canOpen = item && item.manId && item.state === DownloadState.DONE;
+    var canOpenDirectory = item && item.manId;
     this.openFileAction.disabled = !canOpen;
     this.openDirectoryAction.disabled = !canOpenDirectory;
   }
 
   resumeDownloads(forced = false) {
-    const sids = this.getSelectedSids(
+    var sids = this.getSelectedSids(
       forced ? DownloadState.FORCABLE : DownloadState.RESUMABLE);
     if (!sids.length) {
       return;
@@ -841,7 +841,7 @@ export class DownloadTable extends VirtualTable {
   }
 
   pauseDownloads() {
-    const sids = this.getSelectedSids(DownloadState.PAUSEABLE);
+    var sids = this.getSelectedSids(DownloadState.PAUSEABLE);
     if (!sids.length) {
       return;
     }
@@ -849,7 +849,7 @@ export class DownloadTable extends VirtualTable {
   }
 
   cancelDownloads() {
-    const sids = this.getSelectedSids(DownloadState.CANCELABLE);
+    var sids = this.getSelectedSids(DownloadState.CANCELABLE);
     if (!sids.length) {
       return;
     }
@@ -858,11 +858,11 @@ export class DownloadTable extends VirtualTable {
 
   async openFile() {
     this.dismissTooltip();
-    const {focusRow} = this;
+    var {focusRow} = this;
     if (focusRow < 0) {
       return;
     }
-    const item = this.downloads.filtered[focusRow];
+    var item = this.downloads.filtered[focusRow];
     if (!item || !item.manId || item.state !== DownloadState.DONE) {
       return;
     }
@@ -887,7 +887,7 @@ export class DownloadTable extends VirtualTable {
     if (this.focusRow < 0) {
       return;
     }
-    const item = this.downloads.filtered[this.focusRow];
+    var item = this.downloads.filtered[this.focusRow];
     if (!item || !item.manId) {
       return;
     }
@@ -901,9 +901,9 @@ export class DownloadTable extends VirtualTable {
   }
 
   async deleteFiles() {
-    const items = [];
-    for (const rowid of this.selection) {
-      const item = this.downloads.filtered[rowid];
+    var items = [];
+    for (var rowid of this.selection) {
+      var item = this.downloads.filtered[rowid];
       if (item.state === DownloadState.DONE && item.manId) {
         items.push(item);
       }
@@ -911,8 +911,8 @@ export class DownloadTable extends VirtualTable {
     if (!items.length) {
       return;
     }
-    const sids = items.map(i => i.sessionId);
-    const paths = items.map(i => i.destFull);
+    var sids = items.map(i => i.sessionId);
+    var paths = items.map(i => i.destFull);
     await new DeleteFilesDialog(paths).show();
     await Promise.all(items.map(async item => {
       try {
@@ -932,7 +932,7 @@ export class DownloadTable extends VirtualTable {
       !navigator.clipboard.writeText) {
       return;
     }
-    const item = this.downloads.filtered[this.focusRow];
+    var item = this.downloads.filtered[this.focusRow];
     if (!item || !item.url) {
       return;
     }
@@ -944,7 +944,7 @@ export class DownloadTable extends VirtualTable {
     if (this.focusRow < 0) {
       return;
     }
-    const item = this.downloads.filtered[this.focusRow];
+    var item = this.downloads.filtered[this.focusRow];
     if (!item || !item.url) {
       return;
     }
@@ -955,7 +955,7 @@ export class DownloadTable extends VirtualTable {
   removeDownloadsInternal(sids?: number[]) {
     if (!sids) {
       sids = [];
-      for (const rowid of this.selection) {
+      for (var rowid of this.selection) {
         sids.push(this.downloads.filtered[rowid].sessionId);
       }
     }
@@ -966,8 +966,8 @@ export class DownloadTable extends VirtualTable {
   }
 
   removeDownloadsByState(state: number, selectionOnly = false) {
-    const branch = selectionOnly ? "filtered" : "items";
-    const items = this.downloads[branch].filter(item => {
+    var branch = selectionOnly ? "filtered" : "items";
+    var items = this.downloads[branch].filter(item => {
       if (selectionOnly && !this.selection.contains(item.filteredPosition)) {
         return false;
       }
@@ -1031,11 +1031,11 @@ export class DownloadTable extends VirtualTable {
     if (this.focusRow < 0) {
       return;
     }
-    const item = this.downloads.filtered[this.focusRow];
+    var item = this.downloads.filtered[this.focusRow];
     if (!item) {
       return;
     }
-    const {domain} = item;
+    var {domain} = item;
     await new RemovalModalDialog(
       complete ?
         _("remove-domain-complete-downloads.question", domain) :
@@ -1045,7 +1045,7 @@ export class DownloadTable extends VirtualTable {
         "remove-domain"
     ).show();
 
-    const items = this.downloads.items.filter(item => {
+    var items = this.downloads.items.filter(item => {
       if (complete && item.state !== DownloadState.DONE) {
         return false;
       }
@@ -1061,11 +1061,11 @@ export class DownloadTable extends VirtualTable {
     if (this.focusRow < 0) {
       return;
     }
-    const item = this.downloads.filtered[this.focusRow];
+    var item = this.downloads.filtered[this.focusRow];
     if (!item) {
       return;
     }
-    const {batch} = item;
+    var {batch} = item;
     await new RemovalModalDialog(
       complete ?
         _("remove-batch-complete-downloads.question", batch) :
@@ -1075,7 +1075,7 @@ export class DownloadTable extends VirtualTable {
         "remove-batch"
     ).show();
 
-    const items = this.downloads.items.filter(item => {
+    var items = this.downloads.items.filter(item => {
       if (complete && item.state !== DownloadState.DONE) {
         return false;
       }
@@ -1088,7 +1088,7 @@ export class DownloadTable extends VirtualTable {
   }
 
   async handleFilterRemove(event: string) {
-    const [prefix, id] = event.split("--", 2);
+    var [prefix, id] = event.split("--", 2);
     if (!prefix || !id) {
       return;
     }
@@ -1109,14 +1109,14 @@ export class DownloadTable extends VirtualTable {
       return;
     }
 
-    const filter = (await filters()).get(id);
+    var filter = (await filters()).get(id);
     if (!filter || typeof filter.id !== "string") {
       return;
     }
     await new RemovalModalDialog(
       _(`${branch}.question`, filter.label), `${branch}-${filter.id}`).show();
 
-    const items = this.downloads.items.filter(item => {
+    var items = this.downloads.items.filter(item => {
       if (!all && item.state !== DownloadState.DONE) {
         return false;
       }
@@ -1130,11 +1130,11 @@ export class DownloadTable extends VirtualTable {
   }
 
   updateItems(items: any[]) {
-    const newDownloads = [];
-    for (const i of items) {
-      const item = this.sids.get(i.sessionId);
+    var newDownloads = [];
+    for (var i of items) {
+      var item = this.sids.get(i.sessionId);
       if (!item) {
-        const rv = new DownloadItem(this, i);
+        var rv = new DownloadItem(this, i);
         this.sids.set(rv.sessionId, rv);
         newDownloads.push(rv);
         continue;
@@ -1201,8 +1201,8 @@ export class DownloadTable extends VirtualTable {
 
 
   removedItems(sids: number[]) {
-    const ssids = new Set(sids);
-    const items = this.downloads.items.filter(i => {
+    var ssids = new Set(sids);
+    var items = this.downloads.items.filter(i => {
       if (!ssids.has(i.sessionId)) {
         return true;
       }
@@ -1225,19 +1225,19 @@ export class DownloadTable extends VirtualTable {
   }
 
   importDownloads() {
-    const picker = document.createElement("input");
+    var picker = document.createElement("input");
     picker.setAttribute("type", "file");
     picker.setAttribute("accept", "text/*,.txt,.lst,.metalink,.meta4,.json");
     picker.onchange = () => {
       if (!picker.files || !picker.files.length) {
         return;
       }
-      const reader = new FileReader();
+      var reader = new FileReader();
       reader.onload = () => {
         if (!reader.result) {
           return;
         }
-        const items = imex.importText(reader.result as string);
+        var items = imex.importText(reader.result as string);
         if (!items || !items.length) {
           return;
         }
@@ -1249,15 +1249,15 @@ export class DownloadTable extends VirtualTable {
   }
 
   exportDownloads(exporter: imex.Exporter) {
-    const items = this.getSelectedItems();
+    var items = this.getSelectedItems();
     if (!items.length) {
       return;
     }
-    const text = exporter.getText(items as unknown as BaseItem[]);
-    const enc = new TextEncoder();
-    const data = enc.encode(text);
-    const url = URL.createObjectURL(new Blob([data], {type: "text/plain"}));
-    const link = document.createElement("a");
+    var text = exporter.getText(items as unknown as BaseItem[]);
+    var enc = new TextEncoder();
+    var data = enc.encode(text);
+    var url = URL.createObjectURL(new Blob([data], {type: "text/plain"}));
+    var link = document.createElement("a");
     link.setAttribute("href", url);
     link.setAttribute("download", exporter.fileName);
     link.style.display = "none";
@@ -1268,14 +1268,14 @@ export class DownloadTable extends VirtualTable {
   }
 
   getRowClasses(rowid: number) {
-    const item = this.downloads.filtered[rowid];
+    var item = this.downloads.filtered[rowid];
     if (!item) {
       return null;
     }
     if (item.opening) {
       return ["opening"];
     }
-    const cls = StateClasses.get(item.state);
+    var cls = StateClasses.get(item.state);
     if (cls && item.opening) {
       return [cls, "opening"];
     }
@@ -1289,7 +1289,7 @@ export class DownloadTable extends VirtualTable {
     if (!this.downloads.filtered.length) {
       return null;
     }
-    const item = this.downloads.filtered[rowid];
+    var item = this.downloads.filtered[rowid];
     if (colid === COL_URL) {
       return item.icon;
     }
@@ -1307,7 +1307,7 @@ export class DownloadTable extends VirtualTable {
   }
 
   getCellText(rowid: number, colid: number) {
-    const item = this.downloads.filtered[rowid];
+    var item = this.downloads.filtered[rowid];
     if (!item) {
       return "";
     }
@@ -1340,7 +1340,7 @@ export class DownloadTable extends VirtualTable {
   }
 
   getCellProgress(rowid: number) {
-    const item = this.downloads.filtered[rowid];
+    var item = this.downloads.filtered[rowid];
     if (!item) {
       return -1;
     }
