@@ -11,22 +11,22 @@ import { windows, CHROME } from "./browser";
 import { BaseItem } from "./item";
 
 export async function single(item: BaseItem | null) {
-  const tracker = new WindowStateTracker("single", {
+  let tracker = new WindowStateTracker("single", {
     minWidth: 750,
     minHeight: 550
   });
   await tracker.init();
-  const windowOptions = tracker.getOptions({
+  let windowOptions = tracker.getOptions({
     url: "/windows/single.html",
     type: "popup",
   });
-  const window = await windows.create(windowOptions);
+  let window = await windows.create(windowOptions);
   tracker.track(window.id);
   try {
     if (!CHROME) {
       windows.update(window.id, tracker.getOptions({}));
     }
-    const port: Port = await Promise.race<Port>([
+    let port: Port = await Promise.race<Port>([
       new Promise<Port>(resolve => Bus.oncePort("single", port => {
         resolve(port);
         return true;
@@ -37,7 +37,7 @@ export async function single(item: BaseItem | null) {
     }
     tracker.track(window.id, port);
 
-    const done = new Promised();
+    let done = new Promised();
 
     port.on("disconnect", () => {
       done.reject(new Error("Prematurely disconnected"));
