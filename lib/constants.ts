@@ -1,18 +1,18 @@
 "use strict";
 // License: MIT
 
-export const ALLOWED_SCHEMES = Object.freeze(new Set<string>([
+export let ALLOWED_SCHEMES = Object.freeze(new Set<string>([
   "http:",
   "https:",
   "ftp:",
 ]));
 
-export const TRANSFERABLE_PROPERTIES = Object.freeze([
+export let TRANSFERABLE_PROPERTIES = Object.freeze([
   "fileName",
   "title",
   "description"
 ]);
 
-export const TYPE_LINK = 1;
-export const TYPE_MEDIA = 2;
-export const TYPE_ALL = 3;
+export let TYPE_LINK = 1;
+export let TYPE_MEDIA = 2;
+export let TYPE_ALL = 3;
