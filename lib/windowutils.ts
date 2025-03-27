@@ -11,11 +11,11 @@ import { WindowStateTracker } from "./windowstatetracker";
 import { Port, Bus } from "./bus";
 import { timeout } from "./util";
 
-const DONATE_URL = "https://www.downthemall.org/howto/donate/";
-const DONATE_LANG_URLS = Object.freeze(new Map([
+var DONATE_URL = "https://www.downthemall.org/howto/donate/";
+var DONATE_LANG_URLS = Object.freeze(new Map([
   ["de", "https://www.downthemall.org/howto/donate/spenden/"],
 ]));
-const MANAGER_URL = "/windows/manager.html";
+var MANAGER_URL = "/windows/manager.html";
 
 export async function mostRecentBrowser(incognito: boolean): Promise<any> {
   let window;
@@ -55,7 +55,7 @@ export async function mostRecentBrowser(incognito: boolean): Promise<any> {
 }
 
 export async function openInTab(url: string, incognito: boolean) {
-  const window = await mostRecentBrowser(incognito);
+  var window = await mostRecentBrowser(incognito);
   await tabs.create({
     active: true,
     url,
@@ -65,11 +65,11 @@ export async function openInTab(url: string, incognito: boolean) {
 }
 
 export async function openInTabOrFocus(url: string, incognito: boolean) {
-  const etabs = await tabs.query({
+  var etabs = await tabs.query({
     url
   });
   if (etabs.length) {
-    const tab = etabs.pop();
+    var tab = etabs.pop();
     await tabs.update(tab.id, {active: true});
     await windows.update(tab.windowId, {focused: true});
     return;
@@ -78,7 +78,7 @@ export async function openInTabOrFocus(url: string, incognito: boolean) {
 }
 
 export async function maybeOpenInTab(url: string, incognito: boolean) {
-  const etabs = await tabs.query({
+  var etabs = await tabs.query({
     url
   });
   if (etabs.length) {
@@ -88,7 +88,7 @@ export async function maybeOpenInTab(url: string, incognito: boolean) {
 }
 
 export async function donate() {
-  const url = DONATE_LANG_URLS.get(_("language_code")) || DONATE_URL;
+  var url = DONATE_LANG_URLS.get(_("language_code")) || DONATE_URL;
   await openInTab(url, false);
 }
 
@@ -103,38 +103,38 @@ export async function openManager(focus = true) {
   catch (ex) {
     console.error(ex.toString(), ex);
   }
-  const url = runtime.getURL(MANAGER_URL);
-  const openInPopup = await Prefs.get("manager-in-popup");
+  var url = runtime.getURL(MANAGER_URL);
+  var openInPopup = await Prefs.get("manager-in-popup");
   if (openInPopup) {
-    const etabs = await tabs.query({
+    var etabs = await tabs.query({
       url
     });
     if (etabs.length) {
       if (!focus) {
         return;
       }
-      const tab = etabs.pop();
+      var tab = etabs.pop();
       await tabs.update(tab.id, {active: true});
       await windows.update(tab.windowId, {focused: true});
       return;
     }
 
-    const tracker = new WindowStateTracker("manager", {
+    var tracker = new WindowStateTracker("manager", {
       minWidth: 700,
       minHeight: 500,
     });
     await tracker.init();
-    const windowOptions = tracker.getOptions({
+    var windowOptions = tracker.getOptions({
       url,
       type: "popup",
     });
-    const window = await windows.create(windowOptions);
+    var window = await windows.create(windowOptions);
     tracker.track(window.id);
     try {
       if (!CHROME) {
         windows.update(window.id, tracker.getOptions({}));
       }
-      const port = await Promise.race<Port>([
+      var port = await Promise.race<Port>([
         new Promise<Port>(resolve => Bus.oncePort("manager", port => {
           resolve(port);
           return true;
@@ -160,8 +160,8 @@ export async function openManager(focus = true) {
 }
 
 export async function openUrls(urls: string[], incognito: boolean) {
-  const window = await mostRecentBrowser(incognito);
-  for (const url of urls) {
+  var window = await mostRecentBrowser(incognito);
+  for (var url of urls) {
     try {
       await tabs.create({
         active: url === urls[0],
@@ -176,24 +176,24 @@ export async function openUrls(urls: string[], incognito: boolean) {
   await windows.update(window.id, {focused: true});
 }
 
-const ICONS = Object.freeze((() => {
-  const rv: any[] = [];
-  for (const [k, v] of Object.entries<string[]>(DEFAULT_ICONS)) {
-    for (const ext of v) {
+var ICONS = Object.freeze((() => {
+  var rv: any[] = [];
+  for (var [k, v] of Object.entries<string[]>(DEFAULT_ICONS)) {
+    for (var ext of v) {
       rv.push([`file.${ext}`, `icon-file-${k}`]);
     }
   }
   return new Map<string, string>(rv);
 })());
 
-export const DEFAULT_ICON_SIZE = 16;
+export var DEFAULT_ICON_SIZE = 16;
 
 // eslint-disable-next-line no-unused-vars
 export function iconForPath(path: string, size = DEFAULT_ICON_SIZE) {
-  const web = /^https?:\/\//.test(path);
+  var web = /^https?:\/\//.test(path);
   let file = path.split(/[\\/]/).pop();
   if (file) {
-    const idx = file.lastIndexOf(".");
+    var idx = file.lastIndexOf(".");
     if (idx > 0) {
       file = `file${file.slice(idx)}`;
       file.replace(/\?.*?/g, "");
@@ -219,7 +219,7 @@ export function iconForPath(path: string, size = DEFAULT_ICON_SIZE) {
  * @returns {Promise<Element>}
  */
 export function visible(el: Element | string) {
-  const elem = typeof el === "string" ?
+  var elem = typeof el === "string" ?
     document.querySelector<HTMLElement>(el) :
     el as HTMLElement;
   if (!elem) {
@@ -227,7 +227,7 @@ export function visible(el: Element | string) {
   }
 
   return new Promise(resolve => {
-    const obs = new IntersectionObserver(entries => {
+    var obs = new IntersectionObserver(entries => {
       if (!entries.some(e => e.isIntersecting)) {
         return;
       }
