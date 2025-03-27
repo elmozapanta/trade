@@ -9,13 +9,13 @@ import { CDHeaderParser } from "../cdheaderparser";
 import { sanitizePath, parsePath } from "../util";
 import { MimeDB } from "../mime";
 
-const PREROLL_HEURISTICS = /dl|attach|download|name|file|get|retr|^n$|\.(php|asp|py|pl|action|htm|shtm)/i;
-const PREROLL_HOSTS = /4cdn|chan/;
-const PREROLL_TIMEOUT = 10000;
-const PREROLL_NOPE = new Set<string>();
+var PREROLL_HEURISTICS = /dl|attach|download|name|file|get|retr|^n$|\.(php|asp|py|pl|action|htm|shtm)/i;
+var PREROLL_HOSTS = /4cdn|chan/;
+var PREROLL_TIMEOUT = 10000;
+var PREROLL_NOPE = new Set<string>();
 
 /* eslint-disable no-magic-numbers */
-const NOPE_STATUSES = Object.freeze(new Set([
+var NOPE_STATUSES = Object.freeze(new Set([
   400,
   401,
   402,
@@ -24,7 +24,7 @@ const NOPE_STATUSES = Object.freeze(new Set([
 ]));
 /* eslint-enable no-magic-numbers */
 
-const PREROLL_SEARCHEXTS = Object.freeze(new Set<string>([
+var PREROLL_SEARCHEXTS = Object.freeze(new Set<string>([
   "php",
   "asp",
   "aspx",
@@ -36,8 +36,8 @@ const PREROLL_SEARCHEXTS = Object.freeze(new Set<string>([
   "html",
   "shtml"
 ]));
-const NAME_TESTER = /\.[a-z0-9]{1,5}$/i;
-const CDPARSER = new CDHeaderParser();
+var NAME_TESTER = /\.[a-z0-9]{1,5}$/i;
+var CDPARSER = new CDHeaderParser();
 
 export interface PrerollResults {
   error?: string;
@@ -57,8 +57,8 @@ export class Preroller {
     if (CHROME) {
       return false;
     }
-    const {uURL, renamer} = this.download;
-    const {pathname, search, host} = uURL;
+    var {uURL, renamer} = this.download;
+    var {pathname, search, host} = uURL;
     if (PREROLL_NOPE.has(host)) {
       return false;
     }
@@ -91,10 +91,10 @@ export class Preroller {
   }
 
   private async prerollFirefox() {
-    const controller = new AbortController();
-    const {signal} = controller;
-    const {uURL, uReferrer} = this.download;
-    const res = await fetch(uURL.toString(), {
+    var controller = new AbortController();
+    var {signal} = controller;
+    var {uURL, uReferrer} = this.download;
+    var res = await fetch(uURL.toString(), {
       method: "GET",
       headers: new Headers({
         Range: "bytes=0-1",
@@ -107,18 +107,18 @@ export class Preroller {
       res.body.cancel();
     }
     controller.abort();
-    const {headers} = res;
+    var {headers} = res;
     return this.finalize(headers, res);
   }
 
   private async prerollChrome() {
     let rid = "";
-    const {uURL, uReferrer} = this.download;
-    const rurl = uURL.toString();
+    var {uURL, uReferrer} = this.download;
+    var rurl = uURL.toString();
     let listener: any;
-    const wr = new Promise<any[]>(resolve => {
+    var wr = new Promise<any[]>(resolve => {
       listener = (details: any) => {
-        const {url, requestId, statusCode} = details;
+        var {url, requestId, statusCode} = details;
         if (rid !== requestId && url !== rurl) {
           return;
         }
@@ -133,7 +133,7 @@ export class Preroller {
       webRequest.onHeadersReceived.addListener(
         listener, {urls: ["<all_urls>"]}, ["responseHeaders"]);
     });
-    const p = Promise.race([
+    var p = Promise.race([
       wr,
       new Promise<any[]>((_, reject) =>
         setTimeout(() => reject(new Error("timeout")), PREROLL_TIMEOUT))
@@ -142,9 +142,9 @@ export class Preroller {
     p.finally(() => {
       webRequest.onHeadersReceived.removeListener(listener);
     });
-    const controller = new AbortController();
-    const {signal} = controller;
-    const res = await fetch(rurl, {
+    var controller = new AbortController();
+    var {signal} = controller;
+    var res = await fetch(rurl, {
       method: "GET",
       headers: new Headers({
         "Range": "bytes=0-1",
@@ -157,22 +157,22 @@ export class Preroller {
       res.body.cancel();
     }
     controller.abort();
-    const headers = await p;
+    var headers = await p;
     return this.finalize(
       new Headers(headers.map(i => [i.name, i.value])), res);
   }
 
   private finalize(headers: Headers, res: Response): PrerollResults {
-    const rv: PrerollResults = {};
+    var rv: PrerollResults = {};
 
-    const type = MimeType.parse(headers.get("content-type") || "");
+    var type = MimeType.parse(headers.get("content-type") || "");
     if (type) {
       rv.mime = type.essence;
     }
 
     if (res.redirected) {
       try {
-        const {name} = parsePath(new URL(res.url));
+        var {name} = parsePath(new URL(res.url));
         if (name) {
           rv.name = name;
         }
@@ -182,13 +182,13 @@ export class Preroller {
       }
     }
 
-    const dispHeader = headers.get("content-disposition");
+    var dispHeader = headers.get("content-disposition");
     let validDispHeader = false;
 
     if (dispHeader) {
-      const file = CDPARSER.parse(dispHeader);
+      var file = CDPARSER.parse(dispHeader);
       if (file && file.length) {
-        const name = sanitizePath(file.replace(/[/\\]+/g, "-"));
+        var name = sanitizePath(file.replace(/[/\\]+/g, "-"));
         if (name && name.length) {
           rv.name = name;
           validDispHeader = true;
@@ -197,7 +197,7 @@ export class Preroller {
     }
 
     if (!validDispHeader) {
-      const detected = Preroller.maybeFindNameFromSearchParams(
+      var detected = Preroller.maybeFindNameFromSearchParams(
         this.download, rv);
       if (detected) {
         rv.name = detected;
@@ -207,7 +207,7 @@ export class Preroller {
     rv.finalURL = res.url;
 
     /* eslint-disable no-magic-numbers */
-    const {status} = res;
+    var {status} = res;
     if (status === 404) {
       rv.error = "SERVER_BAD_CONTENT";
     }
@@ -236,7 +236,7 @@ export class Preroller {
 
   static maybeFindNameFromSearchParams(
       download: Download, res: PrerollResults) {
-    const {p_ext: ext} = download.renamer;
+    var {p_ext: ext} = download.renamer;
     if (ext && !PREROLL_SEARCHEXTS.has(ext.toLocaleLowerCase("en-US"))) {
       return undefined;
     }
@@ -244,13 +244,13 @@ export class Preroller {
   }
 
   static findNameFromSearchParams(url: URL, mimetype?: string) {
-    const {searchParams} = url;
+    var {searchParams} = url;
     let detected = "";
-    for (const [, value] of searchParams) {
+    for (var [, value] of searchParams) {
       if (!NAME_TESTER.test(value)) {
         continue;
       }
-      const p = parsePath(value);
+      var p = parsePath(value);
       if (!p.base || !p.ext) {
         continue;
       }
@@ -258,12 +258,12 @@ export class Preroller {
         continue;
       }
       if (mimetype) {
-        const mime = MimeDB.getMime(mimetype);
+        var mime = MimeDB.getMime(mimetype);
         if (mime && !mime.extensions.has(p.ext.toLowerCase())) {
           continue;
         }
       }
-      const sanitized = sanitizePath(p.name);
+      var sanitized = sanitizePath(p.name);
       if (sanitized.length <= detected.length) {
         continue;
       }
