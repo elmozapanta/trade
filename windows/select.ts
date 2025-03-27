@@ -27,19 +27,19 @@ import { TableConfig } from "../uikit/lib/config";
 import { validateSubFolder as validateSubfolder } from "../lib/util";
 import "./theme";
 
-const PORT: RawPort = runtime.connect(null, { name: "select" });
+var PORT: RawPort = runtime.connect(null, { name: "select" });
 
-const TREE_CONFIG_VERSION = 1;
+var TREE_CONFIG_VERSION = 1;
 
-const COL_CHECK = 0;
-const COL_DOWNLOAD = 1;
-const COL_TITLE = 2;
-const COL_DESC = 3;
-const COL_MASK = 4;
-const COL_REFERRER = 5;
+var COL_CHECK = 0;
+var COL_DOWNLOAD = 1;
+var COL_TITLE = 2;
+var COL_DESC = 3;
+var COL_MASK = 4;
+var COL_REFERRER = 5;
 
-const ICON_BASE_SIZE = 16;
-const NUM_FILTER_CLASSES = 8;
+var ICON_BASE_SIZE = 16;
+var NUM_FILTER_CLASSES = 8;
 
 let Table: SelectionTable;
 let Mask: Dropdown;
@@ -56,7 +56,7 @@ interface BaseMatchedItem extends BaseItem {
 }
 
 function clearErrors() {
-  const not = $("#notification");
+  var not = $("#notification");
   not.textContent = "";
   not.style.display = "none";
 }
@@ -68,8 +68,8 @@ function matched(item: BaseMatchedItem) {
 
 class PausedModalDialog extends ModalDialog {
   getContent() {
-    const tmpl = $<HTMLTemplateElement>("#paused-template");
-    const content = tmpl.content.cloneNode(true) as DocumentFragment;
+    var tmpl = $<HTMLTemplateElement>("#paused-template");
+    var content = tmpl.content.cloneNode(true) as DocumentFragment;
     return content;
   }
 
@@ -152,7 +152,7 @@ class ItemCollection {
   }
 
   get checked() {
-    const rv: number[] = [];
+    var rv: number[] = [];
     this.items.forEach(function (item, idx) {
       if (item.matched && item.matched !== "unmanual") {
         rv.push(idx);
@@ -162,7 +162,7 @@ class ItemCollection {
   }
 
   get checkedBackIndexes() {
-    const rv: number[] = [];
+    var rv: number[] = [];
     this.items.forEach(function(item) {
       if (item.matched && item.matched !== "unmanual") {
         rv.push(item.backIdx);
@@ -282,14 +282,14 @@ class SelectionTable extends VirtualTable {
       Prefs.set("tree-config-select", JSON.stringify(this));
     });
     this.on("column-clicked", colid => {
-      const keyfn = this.keyfns.get(colid);
+      var keyfn = this.keyfns.get(colid);
       if (!keyfn) {
         return false;
       }
       this.links.sort(keyfn);
       this.media.sort(keyfn);
-      const elem = document.querySelector<HTMLElement>(`#${colid}`);
-      const oldelem = (this.sortcol && document.querySelector<HTMLElement>(`#${this.sortcol}`));
+      var elem = document.querySelector<HTMLElement>(`#${colid}`);
+      var oldelem = (this.sortcol && document.querySelector<HTMLElement>(`#${this.sortcol}`));
       if (this.sortcol === colid && this.sortasc) {
         this.links.reverse();
         this.media.reverse();
@@ -320,7 +320,7 @@ class SelectionTable extends VirtualTable {
     });
 
     Keys.on("ACCEL-KeyA", (event: KeyboardEvent) => {
-      const target = event.target as HTMLElement;
+      var target = event.target as HTMLElement;
       if (target.localName === "input") {
         return false;
       }
@@ -348,8 +348,8 @@ class SelectionTable extends VirtualTable {
         return;
       }
       let oldmask = "";
-      for (const r of this.selection) {
-        const m = this.items.at(r).mask;
+      for (var r of this.selection) {
+        var m = this.items.at(r).mask;
         if (oldmask && m !== oldmask) {
           oldmask = "";
           break;
@@ -358,9 +358,9 @@ class SelectionTable extends VirtualTable {
       }
       try {
         Keys.suppressed = true;
-        const newmask = await ModalDialog.prompt(
+        var newmask = await ModalDialog.prompt(
           _("set_mask"), _("set_mask_text"), oldmask);
-        for (const r of this.selection) {
+        for (var r of this.selection) {
           this.items.at(r).mask = newmask;
           this.invalidateRow(r);
         }
@@ -378,8 +378,8 @@ class SelectionTable extends VirtualTable {
         return;
       }
       let oldref = "";
-      for (const r of this.selection) {
-        const m = this.items.at(r).usableReferrer;
+      for (var r of this.selection) {
+        var m = this.items.at(r).usableReferrer;
         if (oldref && m !== oldref) {
           oldref = "";
           break;
@@ -388,7 +388,7 @@ class SelectionTable extends VirtualTable {
       }
       try {
         Keys.suppressed = true;
-        const newref = await ModalDialog.prompt(
+        var newref = await ModalDialog.prompt(
           _("set_referrer"), _("set_referrer_text"), oldref);
         try {
           let ref;
@@ -399,14 +399,14 @@ class SelectionTable extends VirtualTable {
             };
           }
           else {
-            const u = new URL(newref);
+            var u = new URL(newref);
             u.hash = "";
             ref = {
               referrer: u.toString(),
               usableReferrer: decodeURIComponent(u.toString()),
             };
           }
-          for (const r of this.selection) {
+          for (var r of this.selection) {
             Object.assign(this.items.at(r), ref);
             this.invalidateRow(r);
           }
@@ -445,8 +445,8 @@ class SelectionTable extends VirtualTable {
     if (this.selection.empty) {
       return false;
     }
-    for (const rowid of this.selection) {
-      const item = this.items.at(rowid);
+    for (var rowid of this.selection) {
+      var item = this.items.at(rowid);
       if (!state) {
         state = matched(item) ? "unmanual" : "manual";
       }
@@ -472,7 +472,7 @@ class SelectionTable extends VirtualTable {
   selectChecked() {
     this.selection.clear();
     let min = null;
-    for (const ci of this.items.checked) {
+    for (var ci of this.items.checked) {
       this.selection.add(ci);
       min = min === null ? ci : Math.min(min, ci);
     }
@@ -486,8 +486,8 @@ class SelectionTable extends VirtualTable {
   }
 
   openSelection() {
-    const privates: BaseMatchedItem[] = [];
-    const items = this.items.filter((i, idx) => this.selection.contains(idx)).
+    var privates: BaseMatchedItem[] = [];
+    var items = this.items.filter((i, idx) => this.selection.contains(idx)).
       filter(i => {
         if (i.private) {
           privates.push(i);
@@ -499,7 +499,7 @@ class SelectionTable extends VirtualTable {
       if (this.focusRow < 0) {
         return;
       }
-      const item = this.items.at(this.focusRow);
+      var item = this.items.at(this.focusRow);
       if (item.private) {
         privates.push(item);
       }
@@ -525,13 +525,13 @@ class SelectionTable extends VirtualTable {
   }
 
   applyDeltaTo(delta: ItemDelta[], items: ItemCollection) {
-    const active = items === this.items;
-    for (const d of delta) {
-      const {idx = -1, matched = null} = d;
+    var active = items === this.items;
+    for (var d of delta) {
+      var {idx = -1, matched = null} = d;
       if (idx < 0) {
         continue;
       }
-      const item = items.byIndex(idx);
+      var item = items.byIndex(idx);
       if (!item) {
         continue;
       }
@@ -558,7 +558,7 @@ class SelectionTable extends VirtualTable {
 
   switchTab(type: string) {
     this.type = type;
-    const isLinks = type === "links";
+    var isLinks = type === "links";
     this.linksTab.classList[isLinks ? "add" : "remove"]("active");
     this.mediaTab.classList[!isLinks ? "add" : "remove"]("active");
     this.linksFilters.classList[isLinks ? "add" : "remove"]("active");
@@ -570,7 +570,7 @@ class SelectionTable extends VirtualTable {
   }
 
   updateStatus() {
-    const selected = this.items.checked.length;
+    var selected = this.items.checked.length;
     if (!selected) {
       this.status.textContent = _("noitems.label");
     }
@@ -581,11 +581,11 @@ class SelectionTable extends VirtualTable {
   }
 
   getRowClasses(rowid: number) {
-    const item = this.items.at(rowid);
+    var item = this.items.at(rowid);
     if (!item || !matched(item) || !item.matched) {
       return null;
     }
-    const m = this.checkClasser.get(item.matched);
+    var m = this.checkClasser.get(item.matched);
     if (!m) {
       return null;
     }
@@ -593,7 +593,7 @@ class SelectionTable extends VirtualTable {
   }
 
   getCellIcon(rowid: number, colid: number) {
-    const item = this.items.at(rowid);
+    var item = this.items.at(rowid);
     if (item && colid === COL_DOWNLOAD) {
       return this.icons.get(iconForPath(item.url, ICON_BASE_SIZE));
     }
@@ -610,7 +610,7 @@ class SelectionTable extends VirtualTable {
   }
 
   getDownloadText(idx: number) {
-    const item = this.items.at(idx);
+    var item = this.items.at(idx);
     if (!item) {
       return "";
     }
@@ -621,7 +621,7 @@ class SelectionTable extends VirtualTable {
   }
 
   getText(prop: string, idx: number) {
-    const item: any = this.items.at(idx);
+    var item: any = this.items.at(idx);
     if (!item || !(prop in item) || !item[prop]) {
       return "";
     }
@@ -629,7 +629,7 @@ class SelectionTable extends VirtualTable {
   }
 
   getMaskText(idx: number) {
-    const item = this.items.at(idx);
+    var item = this.items.at(idx);
     if (item) {
       return item.mask;
     }
@@ -674,21 +674,21 @@ class SelectionTable extends VirtualTable {
 
 async function download(paused = false) {
   try {
-    const mask = Mask.value;
+    var mask = Mask.value;
     if (!mask) {
       throw new Error("error.invalidMask");
     }
-    const subfolder = Subfolder.value;
+    var subfolder = Subfolder.value;
     validateSubfolder(subfolder);
 
-    const items = Table.items.checkedBackIndexes;
+    var items = Table.items.checkedBackIndexes;
     if (!items.length) {
       throw new Error("error.noItemsSelected");
     }
     if (paused && !(await Prefs.get("add-paused"))) {
       try {
         Keys.suppressed = true;
-        const remember = await new PausedModalDialog().show();
+        var remember = await new PausedModalDialog().show();
         if (remember === "ok") {
           await Prefs.set("add-paused", true);
           await Prefs.save();
@@ -720,8 +720,8 @@ async function download(paused = false) {
     });
   }
   catch (ex) {
-    const not = $("#notification");
-    const msg = _(ex.message || ex);
+    var not = $("#notification");
+    var msg = _(ex.message || ex);
     not.textContent = msg || ex.message || ex;
     not.style.display = "block";
   }
@@ -767,7 +767,7 @@ class Filter {
 
 function setFiltersInternal(
     desc: string, filters: any[], active: Set<string>) {
-  const container = $(desc);
+  var container = $(desc);
   container.textContent = "";
   for (let filter of filters) {
     filter = new Filter(container, filter, active.has(filter.id));
@@ -775,12 +775,12 @@ function setFiltersInternal(
 }
 
 function setFilters(filters: any) {
-  const {
+  var {
     linkFilterDescs = [],
     mediaFilterDescs = [],
     activeFilters = []
   } = filters;
-  const active: Set<string> = new Set(activeFilters);
+  var active: Set<string> = new Set(activeFilters);
   setFiltersInternal("#linksFilters", linkFilterDescs, active);
   setFiltersInternal("#mediaFilters", mediaFilterDescs, active);
 }
@@ -805,7 +805,7 @@ async function init() {
   Subfolder.on("changed", clearErrors);
 }
 
-const LOADED = new Promise(resolve => {
+var LOADED = new Promise(resolve => {
   addEventListener("load", function dom() {
     removeEventListener("load", dom);
     locale.then(() => resolve(true));
@@ -855,8 +855,8 @@ addEventListener("DOMContentLoaded", function dom() {
       await LOADED;
       switch (msg.msg) {
       case "items": {
-        const {type = "links", links = [], media = []} = msg.data;
-        const treeConfig = JSON.parse(
+        var {type = "links", links = [], media = []} = msg.data;
+        var treeConfig = JSON.parse(
           await Prefs.get("tree-config-select", "{}"));
         requestAnimationFrame(() => {
           Table = new SelectionTable(treeConfig, type, links, media);
