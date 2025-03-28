@@ -1,9 +1,9 @@
 "use strict";
 // License: MIT
 
-var RE_TOKENIZE = /(0x[0-9a-f]+|[+-]?[0-9]+(?:\.[0-9]*(?:e[+-]?[0-9]+)?)?|\d+)/i;
-var RE_HEX = /^0x[0-9a-z]+$/i;
-var RE_TRIMMORE = /\s+/g;
+const RE_TOKENIZE = /(0x[0-9a-f]+|[+-]?[0-9]+(?:\.[0-9]*(?:e[+-]?[0-9]+)?)?|\d+)/i;
+const RE_HEX = /^0x[0-9a-z]+$/i;
+const RE_TRIMMORE = /\s+/g;
 
 type KeyFunc<T> = (v: T) => any;
 type CompareFunc<T> = (a: T, b: T) => number;
@@ -24,7 +24,7 @@ function parseToken(chunk: string) {
   if (RE_HEX.test(chunk)) {
     return parseInt(chunk.slice(2), 16);
   }
-  var val = parseFloat(chunk);
+  const val = parseFloat(chunk);
   return Number.isNaN(val) ? chunk : val;
 }
 
@@ -36,8 +36,8 @@ function tokenize(val: any) {
   if (typeof val === "number") {
     return [[`${val}`], [val]];
   }
-  var tokens = `${val}`.split(RE_TOKENIZE).filter(filterTokens);
-  var numeric = tokens.map(parseToken);
+  const tokens = `${val}`.split(RE_TOKENIZE).filter(filterTokens);
+  const numeric = tokens.map(parseToken);
   return [tokens, numeric];
 }
 
@@ -49,21 +49,21 @@ function tokenize(val: any) {
  * @returns {Number} Comparison result
  */
 export function naturalCompare(a: any, b: any): number {
-  var [xTokens, xNumeric] = tokenize(a);
-  var [yTokens, yNumeric] = tokenize(b);
+  const [xTokens, xNumeric] = tokenize(a);
+  const [yTokens, yNumeric] = tokenize(b);
 
   // natural sorting through split numeric strings and default strings
-  var {length: xTokenLen} = xTokens;
-  var {length: yTokenLen} = yTokens;
-  var maxLen = Math.min(xTokenLen, yTokenLen);
+  const {length: xTokenLen} = xTokens;
+  const {length: yTokenLen} = yTokens;
+  const maxLen = Math.min(xTokenLen, yTokenLen);
   for (let i = 0; i < maxLen; ++i) {
     // find floats not starting with '0', string or 0 if not defined
-    var xnum = xNumeric[i];
-    var ynum = yNumeric[i];
-    var xtype = typeof xnum;
-    var xisnum = xtype === "number";
-    var ytype = typeof ynum;
-    var sameType = xtype === ytype;
+    const xnum = xNumeric[i];
+    const ynum = yNumeric[i];
+    const xtype = typeof xnum;
+    const xisnum = xtype === "number";
+    const ytype = typeof ynum;
+    const sameType = xtype === ytype;
     if (!sameType) {
       // Proper numbers go first.
       // We already checked sameType above, so we know only one is a number.
@@ -74,7 +74,7 @@ export function naturalCompare(a: any, b: any): number {
     if (xisnum) {
       // both are numbers
       // Compare the numbers and if they are the same, the tokens too
-      var res = defaultCompare(xnum, ynum) ||
+      const res = defaultCompare(xnum, ynum) ||
           defaultCompare(xTokens[i], yTokens[i]);
       if (!res) {
         continue;
@@ -84,7 +84,7 @@ export function naturalCompare(a: any, b: any): number {
 
     // both must be stringey
     // Compare the actual tokens.
-    var res = defaultCompare(xTokens[i], yTokens[i]);
+    const res = defaultCompare(xTokens[i], yTokens[i]);
     if (!res) {
       continue;
     }
@@ -115,11 +115,11 @@ export function naturalCaseCompare(a: any, b: any) {
 export function arrayCompare(a: any, b: any, cmp: CompareFunc<any>): number {
   cmp = cmp || defaultCompare;
   if (Array.isArray(a) && Array.isArray(b)) {
-    var {length: alen} = a;
-    var {length: blen} = b;
-    var len = Math.min(alen, blen);
+    const {length: alen} = a;
+    const {length: blen} = b;
+    const len = Math.min(alen, blen);
     for (let i = 0; i < len; ++i) {
-      var rv = arrayCompare(a[i], b[i], cmp);
+      const rv = arrayCompare(a[i], b[i], cmp);
       if (rv) {
         return rv;
       }
@@ -137,8 +137,8 @@ interface MapValue {
 
 function mappedCompare(
     fn: CompareFunc<any>, a: MapValue, b: MapValue): number {
-  var {key: ka} = a;
-  var {key: kb} = b;
+  const {key: ka} = a;
+  const {key: kb} = b;
   return arrayCompare(ka, kb, fn) ||
   /* stable */ defaultCompare(a.index, b.index);
 }
@@ -168,7 +168,7 @@ function mappedCompare(
  */
 export function sort<T>(arr: T[], key?: KeyFunc<T>, cmp?: CompareFunc<T>) {
   cmp = cmp || defaultCompare;
-  var carr = arr as unknown as MapValue[];
+  const carr = arr as unknown as MapValue[];
   if (key) {
     arr.forEach((value, index) => {
       carr[index] = {value, key: key(value), index};
