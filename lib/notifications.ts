@@ -5,14 +5,14 @@ import { runtime, notifications } from "./browser";
 
 import {EventEmitter} from "./events";
 
-const DEFAULTS = {
+var DEFAULTS = {
   type: "basic",
   iconUrl: runtime.getURL("/style/icon64.png"),
   title: "DownThemAll!",
   message: "message",
 };
 
-const TIMEOUT = 4000;
+var TIMEOUT = 4000;
 
 let gid = 1;
 
