@@ -15,13 +15,13 @@ import { _, locale } from "./i18n";
 // eslint-disable-next-line no-unused-vars
 import { BaseItem } from "./item";
 
-const REG_ESCAPE = /[{}()[\]\\^$.]/g;
-const REG_FNMATCH = /[*?]/;
-const REG_REG = /^\/(.+?)\/(i)?$/;
-const REG_WILD = /\*/g;
-const REG_WILD2 = /\?/g;
+var REG_ESCAPE = /[{}()[\]\\^$.]/g;
+var REG_FNMATCH = /[*?]/;
+var REG_REG = /^\/(.+?)\/(i)?$/;
+var REG_WILD = /\*/g;
+var REG_WILD2 = /\?/g;
 
-export const FAST = Symbol();
+export var FAST = Symbol();
 
 function mergeUnique(e: RegExp) {
   if (this.has(e.source)) {
@@ -49,16 +49,16 @@ function mergeRegexps(expressions: RegExp[]) {
   if (expressions.length < 2) {
     return expressions[0];
   }
-  const filtered = expressions.filter(mergeUnique, new Set());
-  const flags = new Set();
-  const mapped = filtered.map(mergeMap, flags);
+  var filtered = expressions.filter(mergeUnique, new Set());
+  var flags = new Set();
+  var mapped = filtered.map(mergeMap, flags);
   return new RegExp(mapped.join("|"), Array.from(flags).join(""));
 }
 
 function consolidateRegexps(expressions: Iterable<RegExp>) {
-  const nc = [];
-  const ic = [];
-  for (const expr of expressions) {
+  var nc = [];
+  var ic = [];
+  for (var expr of expressions) {
     if (expr.ignoreCase) {
       ic.push(expr);
     }
@@ -77,7 +77,7 @@ function *parseIntoRegexpInternal(str: string): Iterable<RegExp> {
   // Try complete regexp
   if (str.length > 2 && str[0] === "/") {
     try {
-      const m = str.match(REG_REG);
+      var m = str.match(REG_REG);
       if (!m) {
         throw new Error("Invalid RegExp supplied");
       }
@@ -94,14 +94,14 @@ function *parseIntoRegexpInternal(str: string): Iterable<RegExp> {
 
   // multi-expression
   if (str.includes(",")) {
-    for (const part of str.split(",")) {
+    for (var part of str.split(",")) {
       yield *parseIntoRegexpInternal(part);
     }
     return;
   }
 
   // might be an fnmatch
-  const fnmatch = REG_FNMATCH.test(str);
+  var fnmatch = REG_FNMATCH.test(str);
   str = str.replace(REG_ESCAPE, "\\$&");
   if (fnmatch) {
     str = `^${str.replace(REG_WILD, ".*").replace(REG_WILD2, ".")}$`;
@@ -112,7 +112,7 @@ function *parseIntoRegexpInternal(str: string): Iterable<RegExp> {
 }
 
 function parseIntoRegexp(expr: string) {
-  const expressions = Array.from(parseIntoRegexpInternal(expr));
+  var expressions = Array.from(parseIntoRegexpInternal(expr));
   if (!expressions.length) {
     throw new Error(
       "Invalid filtea rexpression did not yield a regular expression");
@@ -177,7 +177,7 @@ export class Matcher {
   /* eslint-enable no-unused-vars */
 
   matchItem(item: BaseItem) {
-    const {usable = "", title = "", description = "", fileName = ""} = item;
+    var {usable = "", title = "", description = "", fileName = ""} = item;
     return this.match(usable) || this.match(title) ||
              this.match(description) || this.match(fileName);
   }
@@ -257,7 +257,7 @@ export class Filter {
     if (nv === this.raw.expr) {
       return;
     }
-    const reg = Matcher.fromExpression(nv);
+    var reg = Matcher.fromExpression(nv);
     this._reg = reg;
     this.raw.expr = nv;
   }
@@ -355,7 +355,7 @@ class Collection {
   }
 
   *[Symbol.iterator]() {
-    for (const e of this.exprs) {
+    for (var e of this.exprs) {
       if (!e.active) {
         continue;
       }
@@ -415,8 +415,8 @@ class Filters extends EventEmitter {
   }
 
   async create(label: string, expr: string, type: number) {
-    const id = `custom-${uuid()}`;
-    const filter = new Filter(this, id, {
+    var id = `custom-${uuid()}`;
+    var filter = new Filter(this, id, {
       active: true,
       custom: true,
       label,
@@ -432,7 +432,7 @@ class Filters extends EventEmitter {
   }
 
   async "delete"(id: string) {
-    const idx = this.filters.findIndex(e => e.id === id);
+    var idx = this.filters.findIndex(e => e.id === id);
     if (idx < 0) {
       return;
     }
@@ -444,7 +444,7 @@ class Filters extends EventEmitter {
     if (!this.loaded) {
       throw new Error("Filters not initialized yet");
     }
-    const json = this.toJSON();
+    var json = this.toJSON();
     this.ignoreNext = true;
     await storage.local.set({userFilters: json});
     this.regenerate();
@@ -463,10 +463,10 @@ class Filters extends EventEmitter {
   }
 
   regenerate() {
-    const all = new Collection();
-    const links = new Collection();
-    const media = new Collection();
-    for (const current of this.filters) {
+    var all = new Collection();
+    var links = new Collection();
+    var media = new Collection();
+    for (var current of this.filters) {
       try {
         if (current.type & TYPE_ALL) {
           all.push(current);
@@ -495,7 +495,7 @@ class Filters extends EventEmitter {
 
   async load() {
     await locale;
-    const defaultFilters = DEFAULT_FILTERS as any;
+    var defaultFilters = DEFAULT_FILTERS as any;
     let savedFilters = (await storage.local.get("userFilters"));
     if (savedFilters && "userFilters" in savedFilters) {
       savedFilters = savedFilters.userFilters;
@@ -503,10 +503,10 @@ class Filters extends EventEmitter {
     else {
       savedFilters = {};
     }
-    const stub = Object.freeze({custom: true});
+    var stub = Object.freeze({custom: true});
     this.filters.length = 0;
-    const known = new Set();
-    for (const filter of Object.keys(savedFilters)) {
+    var known = new Set();
+    for (var filter of Object.keys(savedFilters)) {
       let current;
       if (filter in defaultFilters) {
         current = defaultFilters[filter].overlay(savedFilters[filter]);
@@ -523,11 +523,11 @@ class Filters extends EventEmitter {
         console.error("Failed to load filter", filter, ex);
       }
     }
-    for (const filter of Object.keys(defaultFilters)) {
+    for (var filter of Object.keys(defaultFilters)) {
       if (known.has(filter)) {
         continue;
       }
-      const current = ({custom: false} as unknown as Overlayable).overlay(
+      var current = ({custom: false} as unknown as Overlayable).overlay(
         defaultFilters[filter]);
       this.filters.push(new Filter(this, filter, current));
     }
@@ -536,8 +536,8 @@ class Filters extends EventEmitter {
   }
 
   async filterItemsByType(items: BaseItem[], type: number) {
-    const matcher = this.typeMatchers.get(type);
-    const fast = await this.getFastFilter();
+    var matcher = this.typeMatchers.get(type);
+    var fast = await this.getFastFilter();
     return items.filter(function(item) {
       if (fast && fast.matchItem(item)) {
         return true;
@@ -547,12 +547,12 @@ class Filters extends EventEmitter {
   }
 
   toJSON() {
-    const rv: any = {};
-    for (const filter of this.filters) {
+    var rv: any = {};
+    for (var filter of this.filters) {
       if (filter.id === FAST) {
         continue;
       }
-      const tosave = filter.toJSON();
+      var tosave = filter.toJSON();
       if (!tosave) {
         continue;
       }
