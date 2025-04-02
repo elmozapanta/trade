@@ -57,7 +57,7 @@ export class LRUMap<TKey, TValue> extends Map<TKey, TValue> {
       return super.set(key, val);
     }
     if (this.size === this._limit) {
-      const key = this.keys().next().value;
+      let key = this.keys().next().value;
       if (this.onpurge) {
         this.onpurge(key, this.get(key));
       }
