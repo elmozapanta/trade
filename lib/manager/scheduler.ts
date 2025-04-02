@@ -7,7 +7,7 @@ import { filterInSitu } from "../util";
 // eslint-disable-next-line no-unused-vars
 import { Download } from "./download";
 
-const REFILTER_COUNT = 50;
+let REFILTER_COUNT = 50;
 
 function queuedFilter(d: Download) {
   return d.state === QUEUED && !d.removed;
@@ -35,9 +35,9 @@ export class Scheduler {
       }
     }
 
-    const hosts = Object.create(null);
-    for (const d of running) {
-      const {domain} = d.uURL;
+    let hosts = Object.create(null);
+    for (let d of running) {
+      let {domain} = d.uURL;
       if (domain in hosts) {
         hosts[domain]++;
       }
@@ -47,13 +47,13 @@ export class Scheduler {
     }
 
     await Limits.load();
-    for (const d of this.queue) {
+    for (let d of this.queue) {
       if (d.state !== QUEUED || d.removed) {
         continue;
       }
-      const {domain} = d.uURL;
-      const limit = Limits.getConcurrentFor(domain);
-      const cur = hosts[domain] || 0;
+      let {domain} = d.uURL;
+      let limit = Limits.getConcurrentFor(domain);
+      let cur = hosts[domain] || 0;
       if (limit <= cur) {
         continue;
       }
