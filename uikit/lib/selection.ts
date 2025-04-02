@@ -33,7 +33,7 @@ export class SelectionRange {
 
   contains(idx: number, border?: number) {
     if (border) {
-      const rv = this.start <= idx && idx <= this.end;
+      var rv = this.start <= idx && idx <= this.end;
       if (rv) {
         return rv;
       }
@@ -61,7 +61,7 @@ export class TableSelection extends EventEmitter {
   }
 
   *[Symbol.iterator]() {
-    for (const r of Array.from(this.ranges)) {
+    for (var r of Array.from(this.ranges)) {
       yield *r;
     }
   }
@@ -73,8 +73,8 @@ export class TableSelection extends EventEmitter {
     let low = 0;
     let high = this.ranges.length - 1;
     while (low <= high) {
-      const mid = ((high + low) / 2) | 0;
-      const r = this.ranges[mid];
+      var mid = ((high + low) / 2) | 0;
+      var r = this.ranges[mid];
       if (r.contains(idx, border)) {
         return {range: r, pos: mid};
       }
@@ -89,17 +89,17 @@ export class TableSelection extends EventEmitter {
   }
 
   _findInsertionPoint(range: SelectionRange) {
-    const end = this.ranges.length - 1;
+    var end = this.ranges.length - 1;
     let low = 0;
     let high = end;
     while (low <= high) {
-      const mid = ((high + low) / 2) | 0;
-      const r = this.ranges[mid];
+      var mid = ((high + low) / 2) | 0;
+      var r = this.ranges[mid];
       if (range.start < r.start) {
         if (mid >= end) {
           return mid;
         }
-        const next = this.ranges[mid + 1];
+        var next = this.ranges[mid + 1];
         if (next.start > range.end) {
           return mid;
         }
@@ -125,7 +125,7 @@ export class TableSelection extends EventEmitter {
   }
 
   _add(sidx: number, eidx: number) {
-    const rs = this._findContainingRange(sidx, 1);
+    var rs = this._findContainingRange(sidx, 1);
     let re;
     if (rs && rs.range.contains(eidx)) {
       re = rs;
@@ -141,13 +141,13 @@ export class TableSelection extends EventEmitter {
         return false;
       }
       // Need to merge
-      const rn = new SelectionRange(rs.range.start, re.range.end);
+      var rn = new SelectionRange(rs.range.start, re.range.end);
       this.ranges.splice(rs.pos, re.pos - rs.pos + 1, rn);
       return true;
     }
     if (rs) {
       // extend
-      const rn = new SelectionRange(rs.range.start, eidx);
+      var rn = new SelectionRange(rs.range.start, eidx);
       let {pos} = rs;
       for (; pos < this.ranges.length; ++pos) {
         if (this.ranges[pos].start > rn.end) {
@@ -159,7 +159,7 @@ export class TableSelection extends EventEmitter {
     }
     if (re) {
       // extend
-      const rn = new SelectionRange(sidx, re.range.end);
+      var rn = new SelectionRange(sidx, re.range.end);
       let {pos} = re;
       for (; pos >= 0; --pos) {
         if (this.ranges[pos].end < rn.start) {
@@ -169,8 +169,8 @@ export class TableSelection extends EventEmitter {
       this.ranges.splice(pos + 1, re.pos - pos, rn);
       return true;
     }
-    const rn = new SelectionRange(sidx, eidx);
-    const ip = this._findInsertionPoint(rn);
+    var rn = new SelectionRange(sidx, eidx);
+    var ip = this._findInsertionPoint(rn);
     let pos = ip;
     for (; pos < this.ranges.length; ++pos) {
       if (this.ranges[pos].start > rn.end) {
@@ -185,11 +185,11 @@ export class TableSelection extends EventEmitter {
     // Let's just add the entire range (which will merge stuff for us) and then
     // remove it again
     this._add(sidx, eidx);
-    const cr = this._findContainingRange(sidx);
+    var cr = this._findContainingRange(sidx);
     if (!cr) {
       return false;
     }
-    const {pos, range} = cr;
+    var {pos, range} = cr;
     this.ranges.splice(pos, 1);
     if (range.start === sidx && range.end === eidx) {
       // Entire range affected, shortcut
@@ -252,18 +252,18 @@ export class TableSelection extends EventEmitter {
       }
       return;
     }
-    const range = new SelectionRange(sidx, eidx);
-    const ranges = this.ranges.
+    var range = new SelectionRange(sidx, eidx);
+    var ranges = this.ranges.
       filter(r => {
         return range.contains(r.start) || range.contains(r.end);
       }).
       map(r => {
         return [r.start, r.end];
       });
-    const changed = new TableSelection();
+    var changed = new TableSelection();
     changed._add(sidx, eidx);
     this._add(sidx, eidx);
-    for (const [s, e] of ranges) {
+    for (var [s, e] of ranges) {
       this._delete(s, e);
     }
     this.emit("selection-toggled", changed);
@@ -273,16 +273,16 @@ export class TableSelection extends EventEmitter {
     if (offset === 0) {
       return;
     }
-    const newSelection = new TableSelection();
-    for (const r of this.ranges) {
+    var newSelection = new TableSelection();
+    for (var r of this.ranges) {
       if (pos > r.end) {
         newSelection._add(r.start, r.end);
         continue;
       }
       if (pos <= r.end && pos <= r.start) {
         if (pos > r.start + offset) {
-          const sidx = Math.max(pos, r.start + offset);
-          const eidx = Math.max(pos, r.end + offset);
+          var sidx = Math.max(pos, r.start + offset);
+          var eidx = Math.max(pos, r.end + offset);
           newSelection._add(sidx, eidx);
         }
         else {
