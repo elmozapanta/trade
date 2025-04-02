@@ -1,7 +1,7 @@
 "use strict";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const polyfill = require("webextension-polyfill");
+let polyfill = require("webextension-polyfill");
 
 interface ExtensionListener {
   addListener: (listener: Function) => void;
@@ -100,21 +100,21 @@ export interface OnInstalled {
   readonly temporary: boolean;
 }
 
-export const {browserAction} = polyfill;
-export const {contextMenus} = polyfill;
-export const {downloads}: {downloads: Downloads} = polyfill;
-export const {extension} = polyfill;
-export const {history} = polyfill;
-export const {menus} = polyfill;
-export const {notifications} = polyfill;
-export const {runtime} = polyfill;
-export const {sessions} = polyfill;
-export const {storage} = polyfill;
-export const {tabs} = polyfill;
-export const {webNavigation} = polyfill;
-export const {webRequest}: {webRequest: WebRequest} = polyfill;
-export const {windows} = polyfill;
-export const {theme} = polyfill;
+export let {browserAction} = polyfill;
+export let {contextMenus} = polyfill;
+export let {downloads}: {downloads: Downloads} = polyfill;
+export let {extension} = polyfill;
+export let {history} = polyfill;
+export let {menus} = polyfill;
+export let {notifications} = polyfill;
+export let {runtime} = polyfill;
+export let {sessions} = polyfill;
+export let {storage} = polyfill;
+export let {tabs} = polyfill;
+export let {webNavigation} = polyfill;
+export let {webRequest}: {webRequest: WebRequest} = polyfill;
+export let {windows} = polyfill;
+export let {theme} = polyfill;
 
-export const CHROME = navigator.appVersion.includes("Chrome/");
-export const OPERA = navigator.appVersion.includes("OPR/");
+export let CHROME = navigator.appVersion.includes("Chrome/");
+export let OPERA = navigator.appVersion.includes("OPR/");
