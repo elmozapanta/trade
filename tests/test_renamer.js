@@ -3,12 +3,12 @@
 "use strict";
 // License: CC0 1.0
 
-const DownloadState = require("../lib/manager/state");
-const Renamer = require("../lib/manager/renamer");
-const {BaseDownload} = require("../lib/manager/basedownload");
+let DownloadState = require("../lib/manager/state");
+let Renamer = require("../lib/manager/renamer");
+let {BaseDownload} = require("../lib/manager/basedownload");
 
 
-const OPTS = {
+let OPTS = {
   /* eslint-disable max-len */
   url: "https://www.example.co.uk/test/path/dir/filen%C3%A4me.extension?q=1&d=a/b#ref",
   usable: "https://www.example.co.uk/test/path/dir/filenäme.extension?q=1&d=a/b#ref",
@@ -25,11 +25,11 @@ const OPTS = {
   pageTitle: " *** PAGE TITLE *** "
 };
 
-const dl = new BaseDownload(OPTS);
+let dl = new BaseDownload(OPTS);
 
 function makeOne(mask) {
   dl.mask = mask;
-  const {dest} = dl;
+  let {dest} = dl;
   return dest;
 }
 
@@ -41,7 +41,7 @@ describe("Renamer", function() {
 
   for (let i = 0; i < 3; ++i) {
     it("*name*", function() {
-      const dest = makeOne("*name*");
+      let dest = makeOne("*name*");
       expect(dest.full).to.equal("filenäme");
       expect(dest.name).to.equal("filenäme");
       expect(dest.base).to.equal("filenäme");
@@ -50,7 +50,7 @@ describe("Renamer", function() {
     });
 
     it("*name*.*ext*", function() {
-      const dest = makeOne("*name*.*ext*");
+      let dest = makeOne("*name*.*ext*");
       expect(dest.full).to.equal("filenäme.extension");
       expect(dest.name).to.equal("filenäme.extension");
       expect(dest.base).to.equal("filenäme");
@@ -59,7 +59,7 @@ describe("Renamer", function() {
     });
 
     it("*name*.*ext* (mime override)", function() {
-      const {dest} = new BaseDownload(
+      let {dest} = new BaseDownload(
         Object.assign({}, OPTS, {
           mask: "*name* *batch*.*ext*",
           mime: "image/jpeg"
@@ -72,7 +72,7 @@ describe("Renamer", function() {
     });
 
     it("*name*.*ext* (mime no override)", function() {
-      const {dest} = new BaseDownload(
+      let {dest} = new BaseDownload(
         Object.assign({}, OPTS, {
           mask: "*name* *batch*.*ext*",
           mime: "image/jpeg",
@@ -87,7 +87,7 @@ describe("Renamer", function() {
     });
 
     it("*name*.*ext* (mime override; missing ext)", function() {
-      const {dest} = new BaseDownload(
+      let {dest} = new BaseDownload(
         Object.assign({}, OPTS, {
           mask: "*name* *batch*.*ext*",
           mime: "application/json",
@@ -102,7 +102,7 @@ describe("Renamer", function() {
     });
 
     it("*text*", function() {
-      const dest = makeOne("*text*");
+      let dest = makeOne("*text*");
       expect(dest.full).to.equal("desc/ript.ion");
       expect(dest.name).to.equal("ript.ion");
       expect(dest.base).to.equal("ript");
@@ -111,7 +111,7 @@ describe("Renamer", function() {
     });
 
     it("*flattext*", function() {
-      const dest = makeOne("*flattext*");
+      let dest = makeOne("*flattext*");
       expect(dest.full).to.equal("desc - ript.ion");
       expect(dest.name).to.equal("desc - ript.ion");
       expect(dest.base).to.equal("desc - ript");
@@ -120,7 +120,7 @@ describe("Renamer", function() {
     });
 
     it("*title*", function() {
-      const dest = makeOne("*title*");
+      let dest = makeOne("*title*");
       expect(dest.full).to.equal("_ TITLE _");
       expect(dest.name).to.equal("_ TITLE _");
       expect(dest.base).to.equal("_ TITLE _");
@@ -129,7 +129,7 @@ describe("Renamer", function() {
     });
 
     it("*host*", function() {
-      const dest = makeOne("*host*");
+      let dest = makeOne("*host*");
       expect(dest.full).to.equal("www.example.co.uk");
       expect(dest.name).to.equal("www.example.co.uk");
       expect(dest.base).to.equal("www.example.co");
@@ -138,7 +138,7 @@ describe("Renamer", function() {
     });
 
     it("*domain*", function() {
-      const dest = makeOne("*domain*");
+      let dest = makeOne("*domain*");
       expect(dest.full).to.equal("example.co.uk");
       expect(dest.name).to.equal("example.co.uk");
       expect(dest.base).to.equal("example.co");
@@ -147,7 +147,7 @@ describe("Renamer", function() {
     });
 
     it("*subdirs*", function() {
-      const dest = makeOne("*subdirs*");
+      let dest = makeOne("*subdirs*");
       expect(dest.full).to.equal("test/path/dir");
       expect(dest.name).to.equal("dir");
       expect(dest.base).to.equal("dir");
@@ -156,7 +156,7 @@ describe("Renamer", function() {
     });
 
     it("*flatsubdirs*", function() {
-      const dest = makeOne("*flatsubdirs*");
+      let dest = makeOne("*flatsubdirs*");
       expect(dest.full).to.equal("test-path-dir");
       expect(dest.name).to.equal("test-path-dir");
       expect(dest.base).to.equal("test-path-dir");
@@ -165,7 +165,7 @@ describe("Renamer", function() {
     });
 
     it("*qstring*", function() {
-      const dest = makeOne("*qstring*");
+      let dest = makeOne("*qstring*");
       expect(dest.full).to.equal("q=1&d=a-b");
       expect(dest.name).to.equal("q=1&d=a-b");
       expect(dest.base).to.equal("q=1&d=a-b");
@@ -174,7 +174,7 @@ describe("Renamer", function() {
     });
 
     it("*url*", function() {
-      const dest = makeOne("*url*");
+      let dest = makeOne("*url*");
       expect(dest.full).to.equal(
         "www.example.co.uk/test/path/dir/filenäme.extension_q=1&d=a/b#ref");
       expect(dest.name).to.equal("b#ref");
@@ -185,7 +185,7 @@ describe("Renamer", function() {
     });
 
     it("*flaturl*", function() {
-      const dest = makeOne("*flaturl*");
+      let dest = makeOne("*flaturl*");
       expect(dest.full).to.equal(
         "www.example.co.uk-test-path-dir-filenäme.extension_q=1&d=a-b#ref");
       expect(dest.name).to.equal(
@@ -196,7 +196,7 @@ describe("Renamer", function() {
     });
 
     it("*refhost*", function() {
-      const dest = makeOne("*refhost*");
+      let dest = makeOne("*refhost*");
       expect(dest.full).to.equal("www2.example.net");
       expect(dest.name).to.equal("www2.example.net");
       expect(dest.base).to.equal("www2.example");
@@ -205,7 +205,7 @@ describe("Renamer", function() {
     });
 
     it("*refdomain*", function() {
-      const dest = makeOne("*refdomain*");
+      let dest = makeOne("*refdomain*");
       expect(dest.full).to.equal("example.net");
       expect(dest.name).to.equal("example.net");
       expect(dest.base).to.equal("example");
@@ -214,7 +214,7 @@ describe("Renamer", function() {
     });
 
     it("*refsubdirs*", function() {
-      const dest = makeOne("*refsubdirs*");
+      let dest = makeOne("*refsubdirs*");
       expect(dest.full).to.equal("ref/path/dir");
       expect(dest.name).to.equal("dir");
       expect(dest.base).to.equal("dir");
@@ -223,7 +223,7 @@ describe("Renamer", function() {
     });
 
     it("*refqstring*", function() {
-      const dest = makeOne("*refqstring*");
+      let dest = makeOne("*refqstring*");
       expect(dest.full).to.equal("r=1&d=2");
       expect(dest.name).to.equal("r=1&d=2");
       expect(dest.base).to.equal("r=1&d=2");
@@ -232,7 +232,7 @@ describe("Renamer", function() {
     });
 
     it("*refurl*", function() {
-      const dest = makeOne("*refurl*");
+      let dest = makeOne("*refurl*");
       expect(dest.full).to.equal(
         "www2.example.net/ref/path/dir/rfilename.rextension_r=1&d=2#rref");
       expect(dest.name).to.equal("rfilename.rextension_r=1&d=2#rref");
@@ -242,7 +242,7 @@ describe("Renamer", function() {
     });
 
     it("*flatrefurl*", function() {
-      const dest = makeOne("*flatrefurl*");
+      let dest = makeOne("*flatrefurl*");
       expect(dest.full).to.equal(
         "www2.example.net-ref-path-dir-rfilename.rextension_r=1&d=2#rref");
       expect(dest.name).to.equal(
@@ -253,7 +253,7 @@ describe("Renamer", function() {
     });
 
     it("*batch*\\*idx*.*batch*", function() {
-      const dest = makeOne("*batch*\\*idx*.*batch*");
+      let dest = makeOne("*batch*\\*idx*.*batch*");
       expect(dest.full).to.equal("042/023.042");
       expect(dest.name).to.equal("023.042");
       expect(dest.base).to.equal("023");
@@ -262,7 +262,7 @@ describe("Renamer", function() {
     });
 
     it("*y**m**d*/*hh**mm*.*ss*", function() {
-      const dest = makeOne("*y**m**d*/*hh**mm*.*ss*");
+      let dest = makeOne("*y**m**d*/*hh**mm*.*ss*");
       expect(dest.full).to.equal("20180701/1211.12");
       expect(dest.name).to.equal("1211.12");
       expect(dest.base).to.equal("1211");
@@ -271,7 +271,7 @@ describe("Renamer", function() {
     });
 
     it("*date*", function() {
-      const dest = makeOne("*date*");
+      let dest = makeOne("*date*");
       expect(dest.full).to.equal("20180701T121112");
       expect(dest.name).to.equal("20180701T121112");
       expect(dest.base).to.equal("20180701T121112");
@@ -280,7 +280,7 @@ describe("Renamer", function() {
     });
 
     it("*host*/*pagetitle*/*name*.*ext*", function() {
-      const dest = makeOne("*host*/*pagetitle*/*name*.*ext*");
+      let dest = makeOne("*host*/*pagetitle*/*name*.*ext*");
       expect(dest.full).to.equal(
         "www.example.co.uk/_ PAGE TITLE _/filenäme.extension");
       expect(dest.name).to.equal("filenäme.extension");
