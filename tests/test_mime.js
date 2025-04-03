@@ -2,7 +2,7 @@
 // License: CC0 1.0
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-let {MimeDB} = require("../lib/mime");
+const {MimeDB} = require("../lib/mime");
 
 describe("MIME", function() {
   it("general", function() {
