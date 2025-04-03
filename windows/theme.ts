@@ -6,14 +6,14 @@ import { PrefWatcher } from "../lib/prefs";
 import { theme } from "../lib/browser";
 import { memoize } from "../lib/memoize";
 
-let resolveColor = memoize(function(color) {
+const resolveColor = memoize(function(color) {
   try {
-    let el = document.createElement("div");
+    const el = document.createElement("div");
     el.style.backgroundColor = color;
     el.style.display = "none";
     document.body.appendChild(el);
     try {
-      let resolved = window.getComputedStyle(el, null).backgroundColor;
+      const resolved = window.getComputedStyle(el, null).backgroundColor;
       return resolved;
     }
     finally {
@@ -25,7 +25,7 @@ let resolveColor = memoize(function(color) {
   }
 }, 10, 1);
 
-export let THEME = new class Theme extends PrefWatcher {
+export const THEME = new class Theme extends PrefWatcher {
   public systemDark: boolean;
 
   public themeDark?: boolean;
@@ -37,7 +37,7 @@ export let THEME = new class Theme extends PrefWatcher {
       theme.getCurrent().then((theme: any) => this.onThemeUpdated({theme}));
     }
     this.themeDark = undefined;
-    let query = window.matchMedia("(prefers-color-scheme: dark)");
+    const query = window.matchMedia("(prefers-color-scheme: dark)");
     this.systemDark = query.matches;
     query.addListener(e => {
       this.systemDark = e.matches;
@@ -60,7 +60,7 @@ export let THEME = new class Theme extends PrefWatcher {
   }
 
   changed(prefs: any, key: string, value: any) {
-    let rv = super.changed(prefs, key, value);
+    const rv = super.changed(prefs, key, value);
     this.recalculate();
     return rv;
   }
@@ -71,29 +71,29 @@ export let THEME = new class Theme extends PrefWatcher {
         this.themeDark = undefined;
         return;
       }
-      let {colors} = theme;
+      const {colors} = theme;
       if (!colors) {
         this.themeDark = undefined;
         return;
       }
-      let color = resolveColor(
+      const color = resolveColor(
         colors.toolbar || colors.popup || colors.ntp_background);
       if (!color) {
         this.themeDark = undefined;
         return;
       }
-      let pieces = color.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/);
+      const pieces = color.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/);
       if (!pieces) {
         this.themeDark = undefined;
         return;
       }
 
-      let r = parseInt(pieces[1], 10);
-      let g = parseInt(pieces[2], 10);
-      let b = parseInt(pieces[3], 10);
+      const r = parseInt(pieces[1], 10);
+      const g = parseInt(pieces[2], 10);
+      const b = parseInt(pieces[3], 10);
       // HSP (Highly Sensitive Poo) equation from
       // http://alienryderflex.com/hsp.html
-      let hsp = Math.sqrt(
+      const hsp = Math.sqrt(
         0.299 * (r * r) +
       0.587 * (g * g) +
       0.114 * (b * b)
