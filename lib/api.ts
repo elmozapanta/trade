@@ -14,7 +14,7 @@ import { MASK, FASTFILTER, SUBFOLDER } from "./recentlist";
 import { openManager } from "./windowutils";
 import { _ } from "./i18n";
 
-const MAX_BATCH = 10000;
+var MAX_BATCH = 10000;
 
 export interface QueueOptions {
   mask?: string;
@@ -22,24 +22,24 @@ export interface QueueOptions {
   paused?: boolean;
 }
 
-export const API = new class APIImpl {
+export var API = new class APIImpl {
   async filter(arr: BaseItem[], type: number) {
     return await (await filters()).filterItemsByType(arr, type);
   }
 
   async queue(items: BaseItem[], options: QueueOptions) {
     await Promise.all([MASK.init(), SUBFOLDER.init()]);
-    const {mask = MASK.current} = options;
-    const {subfolder = SUBFOLDER.current} = options;
+    var {mask = MASK.current} = options;
+    var {subfolder = SUBFOLDER.current} = options;
 
-    const {paused = false} = options;
+    var {paused = false} = options;
 
     let currentBatch = parseInt(await Prefs.get("currentBatch", 0), 10) || 0;
     if (!isFinite(currentBatch) || ++currentBatch >= MAX_BATCH) {
       currentBatch = 1;
     }
 
-    const defaults: any = {
+    var defaults: any = {
       _idx: 0,
       get idx() {
         return ++this._idx;
@@ -69,7 +69,7 @@ export const API = new class APIImpl {
     await Prefs.set("currentBatch", currentBatch);
     await Prefs.save();
 
-    const manager = await getManager();
+    var manager = await getManager();
     await manager.addNewDownloads(items);
     if (await Prefs.get("queue-notification")) {
       if (items.length === 1) {
@@ -96,14 +96,14 @@ export const API = new class APIImpl {
     if (!this.sanity(links, media)) {
       return false;
     }
-    const type = await Prefs.get("last-type", "links");
-    const items = await (async () => {
+    var type = await Prefs.get("last-type", "links");
+    var items = await (async () => {
       if (type === "links") {
         return await API.filter(links, TYPE_LINK);
       }
       return await API.filter(media, TYPE_MEDIA);
     })();
-    const selected = makeUniqueItems([items]);
+    var selected = makeUniqueItems([items]);
     if (!selected.length) {
       return await this.regular(links, media);
     }
@@ -133,7 +133,7 @@ export const API = new class APIImpl {
     if (!this.sanity(links, media)) {
       return false;
     }
-    const {items, options} = await select(links, media);
+    var {items, options} = await select(links, media);
     return this.regularInternal(items, options);
   }
 
@@ -142,7 +142,7 @@ export const API = new class APIImpl {
   }
 
   async singleRegular(item: BaseItem | null) {
-    const {items, options} = await single(item);
+    var {items, options} = await single(item);
     return this.regularInternal(items, options);
   }
 }();
