@@ -1,7 +1,7 @@
 "use strict";
 // License: MIT
 
-const RUN = Symbol();
+let RUN = Symbol();
 
 interface Queued {
   ctx: any;
@@ -31,9 +31,9 @@ export class AnimationPool {
   [RUN]() {
     try {
       while (this.items.length) {
-        const items = Array.from(this.items);
+        let items = Array.from(this.items);
         this.items.length = 0;
-        for (const item of items) {
+        for (let item of items) {
           try {
             item.fn.call(item.ctx, ...item.args);
           }
@@ -44,7 +44,7 @@ export class AnimationPool {
       }
     }
     finally {
-      const {resolve} = this;
+      let {resolve} = this;
       this.items.length = 0;
       this.promise = undefined;
       this.resolve = undefined;
@@ -114,11 +114,11 @@ export class AnimationPool {
    */
   wrap(fn: Function) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const self = this;
+    let self = this;
     return function wrapped(...args: any[]) {
       return self.schedule(this, fn, ...args);
     };
   }
 }
 
-export const APOOL = new AnimationPool();
+export let APOOL = new AnimationPool();
