@@ -7,12 +7,12 @@ import { PromiseSerializer } from "./pserializer";
 import lf from "localforage";
 
 
-const STORE = "iconcache";
+var STORE = "iconcache";
 
 // eslint-disable-next-line no-magic-numbers
-const CACHE_SIZES = CHROME ? [16, 32] : [16, 32, 64, 127];
+var CACHE_SIZES = CHROME ? [16, 32] : [16, 32, 64, 127];
 
-const BLACKLISTED = Object.freeze(new Set([
+var BLACKLISTED = Object.freeze(new Set([
   "",
   "ext",
   "ico",
@@ -30,17 +30,17 @@ const BLACKLISTED = Object.freeze(new Set([
 ]));
 
 async function getIcon(size: number, manId: number) {
-  const raw = await downloads.getFileIcon(manId, {size});
-  const icon = new URL(raw);
+  var raw = await downloads.getFileIcon(manId, {size});
+  var icon = new URL(raw);
   if (icon.protocol === "data:") {
-    const res = await fetch(icon.toString());
-    const blob = await res.blob();
+    var res = await fetch(icon.toString());
+    var blob = await res.blob();
     return {size, icon: blob};
   }
   return {size, icon};
 }
 
-const SYNONYMS = Object.freeze(new Map<string, string>([
+var SYNONYMS = Object.freeze(new Map<string, string>([
   ["jpe", "jpg"],
   ["jpeg", "jpg"],
   ["jfif", "jpg"],
@@ -49,7 +49,7 @@ const SYNONYMS = Object.freeze(new Map<string, string>([
   ["m4v", "mp4"],
 ]));
 
-export const IconCache = new class IconCache extends EventEmitter {
+export var IconCache = new class IconCache extends EventEmitter {
   private db = lf.createInstance({name: STORE});
 
   private cache: Map<string, string>;
@@ -72,7 +72,7 @@ export const IconCache = new class IconCache extends EventEmitter {
     if (BLACKLISTED.has(ext)) {
       return undefined;
     }
-    const sext = `${ext}-${size}`;
+    var sext = `${ext}-${size}`;
     let rv = this.cache.get(sext);
     if (rv) {
       return rv;
@@ -108,13 +108,13 @@ export const IconCache = new class IconCache extends EventEmitter {
       return;
     }
     // eslint-disable-next-line no-magic-numbers
-    const urls = await Promise.all(CACHE_SIZES.map(
+    var urls = await Promise.all(CACHE_SIZES.map(
       size => getIcon(size, manId)));
     if (this.cache.has(ext)) {
       // already processed in this session
       return;
     }
-    for (const {size, icon} of urls) {
+    for (var {size, icon} of urls) {
       this.cache.set(`${ext}-${size}`, URL.createObjectURL(icon));
       await this.db.setItem(`${ext}-${size}`, icon);
     }
