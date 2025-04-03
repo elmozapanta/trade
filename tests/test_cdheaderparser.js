@@ -4,9 +4,9 @@
 // License: MPL-2
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-let { CDHeaderParser } = require("../lib/cdheaderparser");
+const { CDHeaderParser } = require("../lib/cdheaderparser");
 
-let parser = new CDHeaderParser();
+const parser = new CDHeaderParser();
 
 function check(header, expected) {
   expect(parser.parse(header)).to.equal(expected);
@@ -40,8 +40,8 @@ describe("CDHeaderParser", function() {
     // Changed as follows:
     // - Replace error codes with empty string (we never throw).
 
-    let BS = "\\";
-    let DQUOTE = "\"";
+    const BS = "\\";
+    const DQUOTE = "\"";
     // No filename parameter: return nothing
     check("attachment;", "");
     // basic
