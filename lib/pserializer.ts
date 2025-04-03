@@ -1,9 +1,9 @@
 "use strict";
 // License: MIT
 
-const RUNNING = Symbol();
-const LIMIT = Symbol();
-const ITEMS = Symbol();
+let RUNNING = Symbol();
+let LIMIT = Symbol();
+let ITEMS = Symbol();
 
 function nothing() { /* ignored */ }
 
@@ -19,7 +19,7 @@ interface Item {
 
 function scheduleDirect<T>(ctx: any, fn: Function, ...args: any[]): Promise<T> {
   try {
-    const p = Promise.resolve(fn.call(ctx, ...args));
+    let p = Promise.resolve(fn.call(ctx, ...args));
     this[RUNNING]++;
     p.finally(this._next).catch(nothing);
     return p;
@@ -31,8 +31,8 @@ function scheduleDirect<T>(ctx: any, fn: Function, ...args: any[]): Promise<T> {
 
 function scheduleForLater<T>(
     head: boolean, ctx: any, fn: Function, ...args: any[]): Promise<T> {
-  const rv = new Promise<T>((resolve, reject) => {
-    const item = { ctx, fn, args, resolve, reject };
+  let rv = new Promise<T>((resolve, reject) => {
+    let item = { ctx, fn, args, resolve, reject };
     this[ITEMS][head ? "unshift" : "push"](item);
   });
   return rv;
@@ -84,7 +84,7 @@ export class PromiseSerializer {
   }
 
   wrap<T>(ctx: any, fn: Function): Wrapped<T> {
-    const rv = this.scheduleWithContext.bind(this, ctx, fn);
+    let rv = this.scheduleWithContext.bind(this, ctx, fn);
     Object.defineProperty(rv, "prepend", {
       value: this.prependWithContext.bind(this, ctx, fn)
     });
@@ -109,12 +109,12 @@ export class PromiseSerializer {
 
   next() {
     this[RUNNING]--;
-    const item = this[ITEMS].shift();
+    let item = this[ITEMS].shift();
     if (!item) {
       return;
     }
     try {
-      const p = Promise.resolve(item.fn.call(item.ctx, ...item.args));
+      let p = Promise.resolve(item.fn.call(item.ctx, ...item.args));
       this[RUNNING]++;
       item.resolve(p);
       p.finally(this._next).catch(nothing);
