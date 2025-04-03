@@ -22,7 +22,7 @@ import { $ } from "./winutil";
 import { runtime, storage, OPERA } from "../lib/browser";
 import "./theme";
 
-const ICON_BASE_SIZE = 16;
+var ICON_BASE_SIZE = 16;
 
 
 class UIPref<T extends HTMLElement> extends PrefWatcher {
@@ -94,14 +94,14 @@ class OptionPref extends UIPref<HTMLElement> {
   }
 
   change() {
-    const opt = this.options.find(e => e.checked);
+    var opt = this.options.find(e => e.checked);
     if (opt && opt.value) {
       this.save(opt.value);
     }
   }
 
   changed(prefs: any, key: string, value: any) {
-    const opt = this.options.find(e => e.value === value);
+    var opt = this.options.find(e => e.value === value);
     if (opt) {
       opt.checked = true;
     }
@@ -119,7 +119,7 @@ class CreateFilterDialog extends ModalDialog {
   media: HTMLInputElement;
 
   getContent() {
-    const rv = $<HTMLTemplateElement>("#create-filter-template").
+    var rv = $<HTMLTemplateElement>("#create-filter-template").
       content.cloneNode(true) as DocumentFragment;
     this.label = $("#filter-create-label", rv);
     this.expr = $("#filter-create-expr", rv);
@@ -151,8 +151,8 @@ class CreateFilterDialog extends ModalDialog {
     if (!b || !b.default) {
       return super.done(b);
     }
-    const label = this.label.value.trim();
-    const expr = this.expr.value.trim();
+    var label = this.label.value.trim();
+    var expr = this.expr.value.trim();
     let type = 0;
     if (this.link.checked) {
       type |= TYPE_LINK;
@@ -222,7 +222,7 @@ class FiltersUI extends VirtualTable {
     super("#filters", null);
     this.filters = [];
     this.icons = new Icons($("#icons"));
-    const filter: any = null;
+    var filter: any = null;
     this.edit = {
       label: $("#filter-edit-label"),
       expr: $("#filter-edit-expr"),
@@ -254,13 +254,13 @@ class FiltersUI extends VirtualTable {
       this.ignoreNext = true;
       this.saveFilter(this.edit.filter, this.edit.row);
     }, true);
-    const updateTypes = () => {
+    var updateTypes = () => {
       if (!this.edit.filter) {
         return;
       }
-      const link = this.edit.link.checked ? TYPE_LINK : 0;
-      const media = this.edit.media.checked ? TYPE_MEDIA : 0;
-      const type = link | media;
+      var link = this.edit.link.checked ? TYPE_LINK : 0;
+      var media = this.edit.media.checked ? TYPE_MEDIA : 0;
+      var type = link | media;
       if (!type) {
         return;
       }
@@ -277,7 +277,7 @@ class FiltersUI extends VirtualTable {
         return;
       }
       this.edit.row = this.selection.first;
-      const f = this.edit.filter = this.filters[this.edit.row];
+      var f = this.edit.filter = this.filters[this.edit.row];
       if (!this.edit.filter) {
         this.resetEdits();
         return;
@@ -363,18 +363,18 @@ class FiltersUI extends VirtualTable {
 
   getCellIcon(rowid: number, colid: number) {
     if (!colid) {
-      const f = this.filters[rowid];
+      var f = this.filters[rowid];
       if (!f) {
         return null;
       }
-      const icon = iconForPath(`file${f.icon ? `.${f.icon}` : ""}`, ICON_BASE_SIZE);
+      var icon = iconForPath(`file${f.icon ? `.${f.icon}` : ""}`, ICON_BASE_SIZE);
       return this.icons.get(icon);
     }
     return null;
   }
 
   getCellText(rowid: number, colid: number) {
-    const f = this.filters[rowid];
+    var f = this.filters[rowid];
     if (!f) {
       return null;
     }
@@ -442,7 +442,7 @@ class LimitsUI extends VirtualTable {
         return;
       }
       this.edit.row = this.selection.first;
-      const l = this.edit.limit = this.limits[this.edit.row];
+      var l = this.edit.limit = this.limits[this.edit.row];
       if (!l) {
         this.resetEdits();
         return;
@@ -500,7 +500,7 @@ class LimitsUI extends VirtualTable {
       if (this.edit.conlimited.checked && !this.edit.conlimit.checkValidity()) {
         return;
       }
-      const concurrent = this.edit.conunlimited.checked ?
+      var concurrent = this.edit.conunlimited.checked ?
         -1 :
         parseInt(this.edit.conlimit.value, 10);
       Limits.saveEntry(domain, {
@@ -533,7 +533,7 @@ class LimitsUI extends VirtualTable {
   }
 
   getCellText(rowid: number, colid: number) {
-    const f = this.limits[rowid];
+    var f = this.limits[rowid];
     if (!f) {
       return null;
     }
@@ -559,9 +559,9 @@ addEventListener("DOMContentLoaded", async () => {
   new BoolPref("pref-queue-notification", "queue-notification");
   new BoolPref("pref-finish-notification", "finish-notification");
   // XXX: #125
-  const sounds = new BoolPref("pref-sounds", "sounds");
+  var sounds = new BoolPref("pref-sounds", "sounds");
   if (OPERA) {
-    const sp = sounds.elem.parentElement;
+    var sp = sounds.elem.parentElement;
     if (sp) {
       sp.style.display = "none";
     }
@@ -578,7 +578,7 @@ addEventListener("DOMContentLoaded", async () => {
   new OptionPref("pref-conflict-action", "conflict-action");
 
   $("#reset-confirmations").addEventListener("click", async () => {
-    for (const k of Prefs) {
+    for (var k of Prefs) {
       if (!k.startsWith("confirmations.")) {
         continue;
       }
@@ -588,13 +588,13 @@ addEventListener("DOMContentLoaded", async () => {
       _("information.title"), _("reset-confirmations.done"), _("ok"));
   });
   $("#reset-layout").addEventListener("click", async () => {
-    for (const k of Prefs) {
+    for (var k of Prefs) {
       if (!k.startsWith("tree-config-")) {
         continue;
       }
       await Prefs.reset(k);
     }
-    for (const k of Prefs) {
+    for (var k of Prefs) {
       if (!k.startsWith("window-state-")) {
         continue;
       }
@@ -605,10 +605,10 @@ addEventListener("DOMContentLoaded", async () => {
   });
 
 
-  const langs = $<HTMLSelectElement>("#languages");
-  const currentLang = getCurrentLanguage();
-  for (const [code, lang] of ALL_LANGS.entries()) {
-    const langEl = document.createElement("option");
+  var langs = $<HTMLSelectElement>("#languages");
+  var currentLang = getCurrentLanguage();
+  for (var [code, lang] of ALL_LANGS.entries()) {
+    var langEl = document.createElement("option");
     langEl.textContent = lang;
     langEl.value = code;
     if (code === currentLang) {
@@ -637,7 +637,7 @@ addEventListener("DOMContentLoaded", async () => {
 
   visible("#limits").then(() => new LimitsUI());
 
-  const customLocale = $<HTMLInputElement>("#customLocale");
+  var customLocale = $<HTMLInputElement>("#customLocale");
   $<HTMLInputElement>("#loadCustomLocale").addEventListener("click", () => {
     customLocale.click();
   });
@@ -650,13 +650,13 @@ addEventListener("DOMContentLoaded", async () => {
     if (!customLocale.files || !customLocale.files.length) {
       return;
     }
-    const [file] = customLocale.files;
+    var [file] = customLocale.files;
     if (!file || file.size > (5 << 20)) {
       return;
     }
     try {
-      const text = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
+      var text = await new Promise<string>((resolve, reject) => {
+        var reader = new FileReader();
         reader.onload = () => {
           resolve(reader.result as string);
         };
