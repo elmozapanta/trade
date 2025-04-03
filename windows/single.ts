@@ -17,7 +17,7 @@ import { $ } from "./winutil";
 import { validateSubFolder } from "../lib/util";
 import "./theme";
 
-const PORT = runtime.connect(null, { name: "single" });
+var PORT = runtime.connect(null, { name: "single" });
 
 let ITEM: BaseItem;
 let Mask: Dropdown;
@@ -32,8 +32,8 @@ class BatchModalDialog extends ModalDialog {
   }
 
   getContent() {
-    const tmpl = $("#batch-template") as HTMLTemplateElement;
-    const content = tmpl.content.cloneNode(true) as DocumentFragment;
+    var tmpl = $("#batch-template") as HTMLTemplateElement;
+    var content = tmpl.content.cloneNode(true) as DocumentFragment;
     $(".batch-items", content).textContent = this.gen.length.toLocaleString();
     $(".batch-preview", content).textContent = this.gen.preview;
     return content;
@@ -68,7 +68,7 @@ function setItem(item: BaseItem) {
     return;
   }
   ITEM = item;
-  const {
+  var {
     usable = "",
     fileName = "",
     title = "",
@@ -91,7 +91,7 @@ function setItem(item: BaseItem) {
 }
 
 function displayError(err: string) {
-  const not = $("#notification");
+  var not = $("#notification");
   not.textContent = _(err);
   not.style.display = "block";
 }
@@ -112,9 +112,9 @@ async function downloadInternal(paused: boolean) {
     }
   }
 
-  const gen = new BatchGenerator(usable);
+  var gen = new BatchGenerator(usable);
 
-  const usableReferrer = $<HTMLInputElement>("#referrer").value.trim();
+  var usableReferrer = $<HTMLInputElement>("#referrer").value.trim();
   let referrer;
   try {
     referrer = usableReferrer ? new URL(usableReferrer).toString() : "";
@@ -123,18 +123,18 @@ async function downloadInternal(paused: boolean) {
     return displayError("error.invalidReferrer");
   }
 
-  const fileName = $<HTMLInputElement>("#filename").value.trim();
-  const title = $<HTMLInputElement>("#title").value.trim();
-  const description = $<HTMLInputElement>("#description").value.trim();
-  const mask = Mask.value.trim();
+  var fileName = $<HTMLInputElement>("#filename").value.trim();
+  var title = $<HTMLInputElement>("#title").value.trim();
+  var description = $<HTMLInputElement>("#description").value.trim();
+  var mask = Mask.value.trim();
   if (!mask) {
     return displayError("error.invalidMask");
   }
 
-  const subfolder = Subfolder.value.trim();
+  var subfolder = Subfolder.value.trim();
   validateSubFolder(subfolder);
 
-  const items = [];
+  var items = [];
 
   if (!ITEM) {
     ITEM = new Item({
@@ -166,7 +166,7 @@ async function downloadInternal(paused: boolean) {
   if (isBatch) {
     try {
       Keys.suppressed = true;
-      const rv = await new BatchModalDialog(gen).show();
+      var rv = await new BatchModalDialog(gen).show();
       isBatch = rv === "ok";
     }
     finally {
@@ -182,7 +182,7 @@ async function downloadInternal(paused: boolean) {
     items.push(ITEM);
   }
   else {
-    for (const usable of gen) {
+    for (var usable of gen) {
       items.push(Object.assign(
         {},
         ITEM,
@@ -223,7 +223,7 @@ async function init() {
 addEventListener("DOMContentLoaded", async function dom() {
   removeEventListener("DOMContentLoaded", dom);
 
-  const inited = init();
+  var inited = init();
   PORT.onMessage.addListener(async (msg: any) => {
     try {
       switch (msg.msg) {
@@ -270,7 +270,7 @@ addEventListener("load", function () {
 });
 
 addEventListener("contextmenu", event => {
-  const target = event.target as HTMLElement;
+  var target = event.target as HTMLElement;
   if (target.localName === "input") {
     return null;
   }
