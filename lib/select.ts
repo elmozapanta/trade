@@ -31,12 +31,12 @@ function computeSelection(
   let ws = items.map((item, idx: number) => {
     item.idx = item.idx || idx;
     item.sidx = item.sidx || idx;
-    const {matched = null} = item;
+    var {matched = null} = item;
     item.prevMatched = matched;
     item.matched = null;
     return item;
   });
-  for (const filter of filters) {
+  for (var filter of filters) {
     ws = ws.filter(item => {
       if (filter.matchItem(item)) {
         if (filter.id === FAST) {
@@ -62,11 +62,11 @@ function computeSelection(
 
 function *computeActiveFiltersGen(
     filters: Filter[], activeOverrides: Map<string, boolean>) {
-  for (const filter of filters) {
+  for (var filter of filters) {
     if (typeof filter.id !== "string") {
       continue;
     }
-    const override = activeOverrides.get(filter.id);
+    var override = activeOverrides.get(filter.id);
     if (typeof override === "boolean") {
       if (override) {
         yield filter;
@@ -89,23 +89,23 @@ function filtersToDescs(filters: Filter[]) {
 }
 
 export async function select(links: BaseItem[], media: BaseItem[]) {
-  const fm = await filters();
-  const tracker = new WindowStateTracker("select", {
+  var fm = await filters();
+  var tracker = new WindowStateTracker("select", {
     minWidth: 700,
     minHeight: 500,
   });
   await tracker.init();
-  const windowOptions = tracker.getOptions({
+  var windowOptions = tracker.getOptions({
     url: "/windows/select.html",
     type: "popup",
   });
-  const window = await windows.create(windowOptions);
+  var window = await windows.create(windowOptions);
   tracker.track(window.id);
   try {
     if (!CHROME) {
       windows.update(window.id, tracker.getOptions({}));
     }
-    const port = await Promise.race<Port>([
+    var port = await Promise.race<Port>([
       new Promise<Port>(resolve => Bus.oncePort("select", port => {
         resolve(port);
         return true;
@@ -116,7 +116,7 @@ export async function select(links: BaseItem[], media: BaseItem[]) {
     }
     tracker.track(window.id, port);
 
-    const overrides = new Map();
+    var overrides = new Map();
     let fast: Filter | null = null;
     let onlyFast: false;
     try {
@@ -126,30 +126,30 @@ export async function select(links: BaseItem[], media: BaseItem[]) {
       // ignored
     }
 
-    const sendFilters = function(delta = false) {
-      const {linkFilters, mediaFilters} = fm;
-      const alink = computeActiveFilters(linkFilters, overrides);
-      const amedia = computeActiveFilters(mediaFilters, overrides);
-      const sactiveFilters = new Set<any>();
+    var sendFilters = function(delta = false) {
+      var {linkFilters, mediaFilters} = fm;
+      var alink = computeActiveFilters(linkFilters, overrides);
+      var amedia = computeActiveFilters(mediaFilters, overrides);
+      var sactiveFilters = new Set<any>();
       [alink, amedia].forEach(
         a => a.forEach(filter => sactiveFilters.add(filter.id)));
-      const activeFilters = Array.from(sactiveFilters);
-      const linkFilterDescs = filtersToDescs(linkFilters);
-      const mediaFilterDescs = filtersToDescs(mediaFilters);
+      var activeFilters = Array.from(sactiveFilters);
+      var linkFilterDescs = filtersToDescs(linkFilters);
+      var mediaFilterDescs = filtersToDescs(mediaFilters);
       port.post("filters", {linkFilterDescs, mediaFilterDescs, activeFilters});
 
       if (fast) {
         alink.unshift(fast);
         amedia.unshift(fast);
       }
-      const deltaLinks = computeSelection(alink, links, onlyFast);
-      const deltaMedia = computeSelection(amedia, media, onlyFast);
+      var deltaLinks = computeSelection(alink, links, onlyFast);
+      var deltaMedia = computeSelection(amedia, media, onlyFast);
       if (delta) {
         port.post("item-delta", {deltaLinks, deltaMedia});
       }
     };
 
-    const done = new Promised();
+    var done = new Promised();
 
     port.on("disconnect", () => {
       done.reject(new Error("Prematurely disconnected"));
@@ -202,15 +202,15 @@ export async function select(links: BaseItem[], media: BaseItem[]) {
     try {
       fm.on("changed", () => sendFilters(true));
       sendFilters(false);
-      const type = await Prefs.get("last-type", "links");
+      var type = await Prefs.get("last-type", "links");
       port.post("items", {type, links, media});
-      const {items, options} = await done;
-      const selectedIndexes = new Set<number>(items);
-      const selectedList = (options.type === "links" ? links : media);
-      const selectedItems = selectedList.filter(
+      var {items, options} = await done;
+      var selectedIndexes = new Set<number>(items);
+      var selectedList = (options.type === "links" ? links : media);
+      var selectedItems = selectedList.filter(
         (item: BaseItem, idx: number) => selectedIndexes.has(idx));
-      for (const [filter, override] of overrides) {
-        const f = fm.get(filter);
+      for (var [filter, override] of overrides) {
+        var f = fm.get(filter);
         if (f) {
           f.active = override;
         }
