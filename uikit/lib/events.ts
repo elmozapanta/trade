@@ -1,7 +1,7 @@
 "use strict";
 // License: MIT
 
-const EventKeys = Symbol();
+var EventKeys = Symbol();
 
 /**
  * Yis, yet another event emitter implementation!
@@ -40,8 +40,8 @@ export class EventEmitter {
    *   Your callback as you previously registered with the emitter.
    */
   off(event: string, cb: Function) {
-    const keys = this[EventKeys];
-    const handlers = keys.get(event);
+    var keys = this[EventKeys];
+    var handlers = keys.get(event);
     if (!handlers) {
       return;
     }
@@ -61,7 +61,7 @@ export class EventEmitter {
    *   Your callback to execute when an event is emitted.
    */
   once(event: string, cb: (...args: any[]) => any) {
-    const wrapped = (...args: any[]) => {
+    var wrapped = (...args: any[]) => {
       try {
         // eslint-disable-next-line prefer-spread
         return cb.apply(null, args);
@@ -97,11 +97,11 @@ export class EventEmitter {
    */
   emit(event: string, ...args: any[]) {
     let handled = false;
-    const handlers = this[EventKeys].get(event);
+    var handlers = this[EventKeys].get(event);
     if (!handlers) {
       return handled;
     }
-    for (const e of Array.from(handlers)) {
+    for (var e of Array.from(handlers)) {
       try {
         // eslint-disable-next-line prefer-spread
         handled = !!e.apply(null, args) || handled;
