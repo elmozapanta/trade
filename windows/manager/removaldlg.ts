@@ -22,7 +22,7 @@ export class RemovalModalDialog extends ModalDialog {
   }
 
   async getContent() {
-    const content = $<HTMLTemplateElement>("#removal-template").
+    let content = $<HTMLTemplateElement>("#removal-template").
       content.cloneNode(true) as DocumentFragment;
     await localize(content);
     this.check = content.querySelector(".removal-remember");
@@ -53,7 +53,7 @@ export class RemovalModalDialog extends ModalDialog {
     }
     Keys.suppressed = true;
     try {
-      const res = await super.show();
+      let res = await super.show();
       if (this.check && this.check.checked) {
         await Prefs.set(this.pref, true);
       }
@@ -78,12 +78,12 @@ export class DeleteFilesDialog extends ModalDialog {
   }
 
   async getContent() {
-    const content = $<HTMLTemplateElement>("#deletefiles-template").
+    let content = $<HTMLTemplateElement>("#deletefiles-template").
       content.cloneNode(true) as DocumentFragment;
     await localize(content);
-    const list = $(".deletefiles-list", content);
-    for (const path of this.paths) {
-      const li = document.createElement("li");
+    let list = $(".deletefiles-list", content);
+    for (let path of this.paths) {
+      let li = document.createElement("li");
       li.textContent = path;
       list.appendChild(li);
     }
