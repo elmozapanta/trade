@@ -17,7 +17,7 @@ export class Buttons extends EventEmitter {
     let target = evt.target as HTMLElement | null;
     while (target && target !== this.parent) {
       if (target.classList.contains("button")) {
-        const {id} = target;
+        var {id} = target;
         if (id) {
           this.emit(id);
           return;
