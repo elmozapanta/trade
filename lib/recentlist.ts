@@ -4,7 +4,7 @@
 import { none } from "./util";
 import { storage } from "./browser";
 
-let LIST = Symbol("saved-list");
+const LIST = Symbol("saved-list");
 
 function unique(e: string) {
   if (typeof e !== "string" || this.has(e)) {
@@ -48,7 +48,7 @@ export class RecentList {
   }
 
   async _init() {
-    let {[this.pref]: saved = []} = await storage.local.get(this.pref) || [];
+    const {[this.pref]: saved = []} = await storage.local.get(this.pref) || [];
     this[LIST] = [...saved, ...this.defaults].
       filter(unique, new Set()).
       slice(0, this.limit);
@@ -73,8 +73,8 @@ export class RecentList {
     if (value === null || typeof value === "undefined") {
       throw new Error("Invalid value");
     }
-    let list = this[LIST];
-    let idx = list.indexOf(value);
+    const list = this[LIST];
+    const idx = list.indexOf(value);
     if (idx === 0) {
       return;
     }
@@ -98,7 +98,7 @@ export class RecentList {
   }
 }
 
-export let MASK = new RecentList("mask", [
+export const MASK = new RecentList("mask", [
   "*name*.*ext*",
   "*num*_*name*.*ext*",
   "*url*-*name*.*ext*",
@@ -107,7 +107,7 @@ export let MASK = new RecentList("mask", [
 ]);
 MASK.init().catch(console.error);
 
-export let FASTFILTER = new RecentList("fastfilter", [
+export const FASTFILTER = new RecentList("fastfilter", [
   "",
   "/\\.mp3$/",
   "/\\.(html|htm|rtf|doc|pdf)$/",
@@ -117,7 +117,7 @@ export let FASTFILTER = new RecentList("fastfilter", [
 ]);
 FASTFILTER.init().catch(console.error);
 
-export let SUBFOLDER = new RecentList("subfolder", [
+export const SUBFOLDER = new RecentList("subfolder", [
   "",
   "downthemall",
 ]);
